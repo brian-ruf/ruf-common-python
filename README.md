@@ -28,8 +28,11 @@ src/            [Your Python project]
    ├── your-module2.py
    ├── common/  [this submodule]
         ├── data.py
-        ├── misc.py
-        ├── misc.py
+        ├── database_sqlite3.py
+        ├── database.py
+        ├── lfs.py
+        ├── helper.py
+        ├── network.py
         └── __init__.py
 ```
 
