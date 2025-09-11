@@ -1,6 +1,6 @@
 import requests
 from loguru import logger
-from . import misc
+from . import helper
 import socket
 import aiohttp
 import asyncio
@@ -79,7 +79,7 @@ def download_file(url, filename):
     ret_value = ""
     try:
         response = requests.get(url)
-        ret_value = misc.normalize_content(response.content)
+        ret_value = helper.normalize_content(response.content)
         # with open(filename, "wb") as file:
         #     file.write(response.content)
     except requests.exceptions.RequestException as err:

@@ -1,14 +1,14 @@
-# =============================================================================
-#  --- SQLite3 Functions: Functions that are specific to use of SQLite3. ---
-# These functions assume that the SQLite3 database is already created and
-# =============================================================================
+"""
+SQLite3 Functions: Functions that are specific to use of SQLite3. ---
+These functions assume that the SQLite3 database is already created and
+"""
 from loguru import logger
 import pickle
 from typing import Any, Optional, Dict
 import asyncio
 import zlib
 import sqlite3
-from common import misc
+from common import helper
 
 FILE_CACHE_TABLE = 'filecache'
 
@@ -347,7 +347,7 @@ async def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> boo
         raise ValueError(f"Unsupported data type: {type(blob)}")
     
     compress = attributes.get('compress', False)
-    acquired = attributes.get('acquired', misc.oscal_date_time_with_timezone())
+    acquired = attributes.get('acquired', helper.oscal_date_time_with_timezone())
     filename = attributes.get('filename', "")
     original_location = attributes.get('original_location', "")
     file_type = attributes.get('file_type', "")

@@ -1,20 +1,20 @@
 """
-Functions for interacting with a database. Currently only SQLite.
+Database Class for interacting with databases.
+Currently only SQLite3 is supported.
 """
-# Database Class
-#
 # =============================================================================
-# Database Handling
+# Based on examples and suggestions from:
 # https://www.pythonlore.com/handling-database-errors-and-exceptions-in-sqlalchemy/
 # https://stackoverflow.com/questions/2136739/error-handling-in-sqlalchemy
 # =============================================================================
 # TODO: Evaluate using SQLAlchemy for database handling
 # TODO: Handle additional database types beyond sqlite3
+# TODL: Ensure all sqlite3 specific code is in database_sqlite3.py
 # =============================================================================
 import sqlite3
 from loguru import logger
-from . import misc
-from . import type_sqlite3
+from . import helper
+from . import database_sqlite3
 import asyncio
 
 # List of supported databses:
@@ -73,7 +73,7 @@ class Database:
         ret_val = ""
         ret_val += f"Database Type: {self.type}" 
         ret_val += f"Database Target: {self.target}" 
-        ret_val += f"Status: {misc.iff(self.status, 'Ready', 'Not Ready')}" 
+        ret_val += f"Status: {helper.iff(self.status, 'Ready', 'Not Ready')}" 
         return ret_val
 
     # -------------------------------------------------------------------------
@@ -126,7 +126,7 @@ class Database:
 
             # If the count is 1, then table exists
             status = (cursor.fetchone()[0] == 1) 
-            logger.debug(f"Table {name} {misc.iif(status, "exists", "does not exist")}.")
+            logger.debug(f"Table {name} {helper.iif(status, "exists", "does not exist")}.")
 
         except sqlite3.IntegrityError:
             logger.error("Integrity Error: This violates the database's integrity rules.")
@@ -321,7 +321,7 @@ class Database:
                     values_list.append(table_fields[field])
                 case bool():
                     field_list.append(field)
-                    values_list.append(misc.iif(table_fields[field], 1, 0))
+                    values_list.append(helper.iif(table_fields[field], 1, 0))
                 case _:
                     logger.debug(f"Unhandled variable type: {field} ({str(type(table_fields[field]))})")
 

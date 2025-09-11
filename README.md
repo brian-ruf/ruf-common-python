@@ -55,9 +55,10 @@ from common import misc # import only one of the modules
 The following modules are exposed to your application via the above instructions:
 
 - `data.py`: Funcitons for managing and manipulating XML, JSON and YAML content.
-- `database.py`: Functions for interacting with a database. Currently only SQLite.
+- `database.py`: Functions for interacting with a database. These functions operate the same for all supported databases.
 - `lfs.py`: Functions for interacting with thelocal file system (LFS)
 - `helper.py`: Various helper functions
 - `network.py`:
 
 The following additional modules are present and support the above, but are not directly exposed:
+- `type_sqlite3.py`: Any database-specific interactions are collected in a single file for that database.  

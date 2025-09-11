@@ -4,7 +4,7 @@ import os
 import errno
 import sys
 import json
-from . import misc
+from . import helper
 # import uuid
 from loguru import logger
 from pathlib import Path
@@ -94,7 +94,7 @@ def getfile(file_name, normalize = True, mode="rb") -> str:
             file = open(file_name, mode)
             ret_value = file.read()
             if normalize:
-                ret_value = misc.normalize_content(ret_value)
+                ret_value = helper.normalize_content(ret_value)
             status = True
             file.close()
         except OSError:
@@ -142,7 +142,7 @@ def backup_file(filename):
     status = False
     if chkfile(filename):
         p = Path(filename)
-        newname = f"{p.stem}_{misc.datetime_string()}{p.suffix}"
+        newname = f"{p.stem}_{helper.datetime_string()}{p.suffix}"
         logger.debug(f"Renaming [{filename}] to [{newname}]")
         p.rename(Path(p.parent, newname ))
         status = True
