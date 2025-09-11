@@ -61,4 +61,4 @@ The following modules are exposed to your application via the above instructions
 - `network.py`:
 
 The following additional modules are present and support the above, but are not directly exposed:
-- `type_sqlite3.py`: Any database-specific interactions are collected in a single file for that database.  
+- `database_sqlite3.py`: Any database-specific interactions are collected in a single file for that database.  
