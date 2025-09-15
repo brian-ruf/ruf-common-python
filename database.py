@@ -16,6 +16,7 @@ from loguru import logger
 from . import helper
 from . import database_sqlite3
 import asyncio
+from output import *
 
 # List of supported databses:
 # - sqlite3: SQLite 3
@@ -86,7 +87,7 @@ class Database:
         """Executes the correct open function/tasks based on the database type."""
 
         if self.type == "sqlite3":
-            self.conn = type_sqlite3.open_sqlite3(self.target)
+            self.conn = database_sqlite3.open_sqlite3(self.target)
         elif self.type in self.supported:
             logger.error(f"Unhandled database type: {self.type}")
         else:
@@ -365,7 +366,7 @@ class Database:
 
             if self.type == "sqlite3":
                 logger.debug("Storing file in SQLite3 database")
-                status = await type_sqlite3.store_blob_to_db(self.conn, uuid, content, attributes )
+                status = await database_sqlite3.store_blob_to_db(self.conn, uuid, content, attributes )
             
         return status
 
@@ -381,7 +382,7 @@ class Database:
         logger.debug(f"Retrieving file using uuid='{uuid}'" )
 
         if self.type == "sqlite3":
-            content_dict = await type_sqlite3.retrieve_blob_from_db(self.conn, uuid)
+            content_dict = await database_sqlite3.retrieve_blob_from_db(self.conn, uuid)
             if content_dict:
                 logger.debug(f"Retrieved file with uuid='{uuid}'")
                 if "content" in content_dict:
@@ -394,6 +395,26 @@ class Database:
                 logger.debug(f"File with uuid='{uuid}' not found in the database.")
 
         return ret_value
+
+    # -------------------------------------------------------------------------
+    async def retrieve_file_name(self, uuid):
+        """
+        Retrieves the name of a file from the filecache table.
+        uuid: The UUID of the file to be retrieved.
+        Returns: The file name if successful. None otherwise.
+        """
+        filename = None
+        logger.debug(f"Retrieving filename using uuid='{uuid}'" )
+
+        query = f"SELECT filename FROM filecache WHERE uuid = '{uuid}';"
+        results = await self.query(query)
+        if results is not None:
+            filename = results[0].get("filename", None)
+            logger.debug(f"Found filecache UUID {uuid} and filename {filename}.")
+        else:
+            error(f"Unable to find cached file with UUID {uuid}.")
+
+        return filename
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def oscal_datatype(datatype):
