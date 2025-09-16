@@ -2,6 +2,7 @@
 SQLite3 Functions: Functions that are specific to use of SQLite3. ---
 These functions assume that the SQLite3 database is already created and
 """
+import os
 from loguru import logger
 import pickle
 from typing import Any, Optional, Dict
@@ -464,7 +465,7 @@ async def retrieve_blob_from_db(conn, identifier: str) -> Any:
 # -----------------------------------------------------------------------------
 def open_sqlite3(target):
     """
-    Opens a SQLite3 database.
+    Opens a SQLite3 database file.
     SQLite3 will automatically create the database if it does not exist.
     Includes copilot-suggested error handling.
     """
@@ -472,6 +473,11 @@ def open_sqlite3(target):
     conn = None
     logger.debug(f"Opening {target}")
     try:
+        # Ensure the directory exists
+        db_dir = os.path.dirname(target)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+
         conn = sqlite3.connect(target)
         status = True
         logger.debug(f"database opened: {target}")
@@ -481,6 +487,10 @@ def open_sqlite3(target):
         logger.error(f"Programming Error: {pe}")
     except sqlite3.OperationalError as oe:
         logger.error(f"Operational Error: {oe}")
+        if not os.path.exists(os.path.dirname(target)):
+            logger.error(f"Directory does not exist: {os.path.dirname(target)}")
+        elif not os.access(os.path.dirname(target), os.W_OK):
+            logger.error(f"No write permission to directory: {os.path.dirname(target)}")
     except sqlite3.DatabaseError as de:
         logger.error(f"Database Error: {de}")
     except sqlite3.DataError as dte:

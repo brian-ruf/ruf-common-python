@@ -264,6 +264,10 @@ def get_first_non_whitespace_char(data):
 
 # -----------------------------------------------------------------------------
 def safeJSON(object, keys):
+    """
+    Depreciated in favor of the JSON librariy's `.get()` method.
+    Always returns a string from a JSON key or nested keys.
+    """
     status = False
     ret_value = ""
 
