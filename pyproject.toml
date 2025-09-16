@@ -8,11 +8,11 @@ version = "1.0.0-dev"
 description = "Common Python utilities"
 requires-python = ">=3.9"
 dependencies = [
-    "loguru",
-    "elementpath",
-    "pytz",
-    "tzlocal",
-    "aiohttp"
+    "loguru>=0.7.3",
+    "elementpath>=4.7.0",
+    "pytz>=2025.2",
+    "tzlocal>=5.3.1",
+    "aiohttp>=3.12.15"
 ]
 
 [project.urls]
