@@ -5,7 +5,6 @@ import errno
 import sys
 import json
 from . import helper
-# import uuid
 from loguru import logger
 from pathlib import Path
 from datetime import datetime

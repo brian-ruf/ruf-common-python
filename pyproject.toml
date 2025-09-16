@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "common-python"
+version = "1.0.0-dev"
+description = "Common Python utilities"
+requires-python = ">=3.9"
+dependencies = [
+    "loguru",
+    "elementpath",
+    "pytz",
+    "tzlocal",
+    "aiohttp"
+]
+
+[project.urls]
+Homepage = "https://github.com/brian-ruf/common-python"
+Repository = "https://github.com/brian-ruf/common-python.git"
