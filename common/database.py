@@ -16,7 +16,6 @@ from loguru import logger
 from . import helper
 from . import database_sqlite3
 import asyncio
-from output import *
 
 # List of supported databses:
 # - sqlite3: SQLite 3
