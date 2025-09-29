@@ -46,6 +46,23 @@ def putfile(file_name, content):
     return status
 
 # -----------------------------------------------------------------------------
+def save_json(data, file_name):
+    """
+    Saves a dict object as a JSON file.
+    Returns True if successful. 
+    Returns False otherwise.
+    """
+    status = False
+    try:
+        with open(file_name, mode='w') as file:
+            json.dump(data, file, indent=2)
+            file.close()
+        status = True
+    except (Exception, BaseException) as error:
+        logger.error(f"{type(error).__name__} saving {file_name}: {str(error)}")
+
+    return status
+# -----------------------------------------------------------------------------
 def chkfile(path) -> bool:
     """
     Checks for the existence of a file.
