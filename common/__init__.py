@@ -4,6 +4,11 @@ from . import lfs
 from . import helper
 from . import network
 from . import aws
+from . import logging
+from . import stats
+from . import country_code_converter
+from . import html_to_markdown
+from . import timezone_lookup
 
 __all__ = [
     "data",
@@ -11,5 +16,10 @@ __all__ = [
     "lfs",
     "helper",
     "network",
-    "aws"
+    "aws",
+    "logging",
+    "stats",
+    "country_code_converter",
+    "html_to_markdown",
+    "timezone_lookup"
 ]

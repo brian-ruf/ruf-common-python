@@ -88,3 +88,9 @@ def download_file(url, filename):
         logger.error(f"Unrecognized error downloading file: {str(err)}")
         
     return ret_value
+
+# =============================================================================
+#  --- MAIN: Only runs if the module is executed stand-alone. ---
+# =============================================================================
+if __name__ == '__main__':
+    print("Network Module. Not intended to be run as a stand-alone file.")

@@ -9,8 +9,6 @@ from loguru import logger
 from pathlib import Path
 from datetime import datetime
 
-
-
 # =============================================================================
 #  --- PyInstaller Interactions  ---
 # =============================================================================
@@ -45,6 +43,22 @@ def putfile(file_name, content):
 
     return status
 
+# -----------------------------------------------------------------------------
+def get_json(file_name) -> dict:
+    """
+    Opens a JSON file and returns the contents as a dict object.
+    If an error occurs, an empty dict is returned.
+    """
+    logger.debug(f"Getting JSON file {file_name}")
+    json_data = {}
+    try:
+        with open(file_name, mode='r') as file:
+            json_data = json.load(file)
+            file.close()
+    except (Exception, BaseException) as error:
+        logger.error(f"{type(error).__name__} getting JSON file {file_name}: {str(error)}")
+
+    return json_data
 # -----------------------------------------------------------------------------
 def save_json(data, file_name):
     """
