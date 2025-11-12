@@ -24,6 +24,58 @@ def detect_data_format(content):
             return 'yaml'
     
     return 'unknown'
+
+# -------------------------------------------------------------------------
+def is_xml_well_formed(content):
+    """Check if the provided XML string is well-formed."""
+    well_formed = False
+    import elementpath
+    from xml.etree import ElementTree
+    try:
+        tree = ElementTree.fromstring(content.encode('utf_8'))
+        well_formed = True
+    except ElementTree.ParseError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID XML")
+        logger.error(f"XML Parse Error: {e}")
+
+    return well_formed
+
+def is_json_well_formed(content):
+    """Check if the provided JSON string is well-formed."""
+    well_formed = False
+    import json
+    try:
+        json_object = json.loads(content)
+        well_formed = True
+        status = True
+    except json.JSONDecodeError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID JSON")
+        logger.error(f"JSON Decode Error: {e}")
+
+    return well_formed
+
+def is_yaml_well_formed(content):
+    """Check if the provided YAML string is well-formed."""
+    well_formed = False
+    import yaml
+    try:    
+        yaml_object = yaml.safe_load(content)
+        well_formed = True
+        status = True
+    except yaml.YAMLError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID YAML")
+        logger.error(f"YAML Error: {e}")
+
+    return well_formed
+
+
+# -------------------------------------------------------------------------
+
+
+
+
+
+
 # -------------------------------------------------------------------------
 def xpath(tree, nsmap, xExpr, context=None):
     """
