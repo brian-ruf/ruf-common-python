@@ -34,6 +34,7 @@ def is_xml_well_formed(content):
     try:
         tree = ElementTree.fromstring(content.encode('utf_8'))
         well_formed = True
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED XML")
     except ElementTree.ParseError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID XML")
         logger.error(f"XML Parse Error: {e}")
@@ -48,6 +49,7 @@ def is_json_well_formed(content):
         json_object = json.loads(content)
         well_formed = True
         status = True
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED JSON")
     except json.JSONDecodeError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID JSON")
         logger.error(f"JSON Decode Error: {e}")
@@ -62,6 +64,7 @@ def is_yaml_well_formed(content):
         yaml_object = yaml.safe_load(content)
         well_formed = True
         status = True
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED YAML")
     except yaml.YAMLError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID YAML")
         logger.error(f"YAML Error: {e}")
