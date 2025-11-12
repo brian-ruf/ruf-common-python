@@ -10,6 +10,21 @@ from xml.etree.ElementTree import tostring
 from loguru import logger
 
 # -------------------------------------------------------------------------
+def detect_data_format(content):
+    """Detect whether the content is XML, JSON, or YAML based on its starting characters."""
+    content = content.lstrip()  # Remove leading whitespace
+
+    if content.startswith('<?xml') or content.startswith('<'):
+        return 'xml'
+    elif content.startswith('{') or content.startswith('['):
+        return 'json'
+    else:
+        # Simple heuristic for YAML: presence of ':' and no XML/JSON indicators
+        if ':' in content:
+            return 'yaml'
+    
+    return 'unknown'
+# -------------------------------------------------------------------------
 def xpath(tree, nsmap, xExpr, context=None):
     """
     Performs an xpath query either on the entire XML document 
