@@ -13,13 +13,13 @@
 
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 import pytz
 from tzlocal import get_localzone
 import json
 import getpass as gt
 from loguru import logger
-from typing import Union, Dict, Any 
+from typing import Dict, Any 
 
 # -----------------------------------------------------------------------------
 # =============================================================================
@@ -183,27 +183,7 @@ def datetime_string(date_time = datetime.now(), format = "%Y-%m-%d--%H-%M-%S")->
         logger.error(f"{type(error).__name__} error handling date/time formatting: {str(error)}")
     return ret_value
 
-# -----------------------------------------------------------------------------
-def oscal_date_time_with_timezone(date_time = datetime.now(), format = "%Y-%m-%dT%H:%M:%SZ")-> str:
-    """
-    Converts a date and time to UTC and ouptuts an OSCAL date-time-with-timezone string. 
-    Optional Parameters:
-    - date_time (datetime): A date and time to convert to a formatted string.
-       default is the current date and time
-    - format (str): The formatting string to use
-        default is "%Y-%m-%d--%H-%M-%S" (YYYY-MM-DD--HH-MM-SS)
 
-    Returns a formatted date time string.
-    If an error occurs, returns an empty string.
-    """
-    ret_value = ""
-
-    try:
-        date_time = date_time.astimezone(timezone.utc)
-        ret_value = date_time.strftime(format)
-    except (Exception, BaseException) as error:
-        logger.error(f"{type(error).__name__} error handling date/time formatting: {str(error)}")
-    return ret_value
 
 # -----------------------------------------------------------------------------
 # =============================================================================
@@ -241,7 +221,7 @@ def normalize_content(content):
         content = content.decode("utf-8")
         logger.debug(("NORMALIZE: Decoded"))
     else:
-        logger.debug( ("NORMALIZE: Unhandled content encoding: " + type(content)))
+        logger.debug( (f"NORMALIZE: Unhandled content encoding: {type(content)}"))
 
     return content
 
@@ -440,7 +420,7 @@ def prepare_html_for_json(html_content: str, escape_unicode: bool = True) -> str
 
 # -----------------------------------------------------------------------------
 def create_html_update_message(target_id: str, html_content: str, 
-                             additional_data: Dict[str, Any] = None) -> str:
+                             additional_data: Dict[str, Any] = {}) -> str:
     """
     Creates a complete JSON message for HTML content update.
     
@@ -615,7 +595,8 @@ def compare_semver(version1, version2):
 
     v1 = parse_version(version1)
     v2 = parse_version(version2)
-    
+    # NOTE: There is no special in-file comment to make Pylance clear its cache.
+    # Use VS Code -> Command Palette -> "Python: Restart Language Server" (or "Developer: Reload Window") to clear Pylance cache.
     if v1 < v2:
         return -1
     elif v1 > v2:

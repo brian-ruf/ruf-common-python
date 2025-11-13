@@ -18,7 +18,8 @@ dependencies = [
     "boto3",
     "requests>=2.31.0",
     "pycountry>=22.3.5",
-    "html2text>=2020.1.16"
+    "html2text>=2020.1.16",
+    "packaging>=23.1"
 ]
 
 [project.urls]

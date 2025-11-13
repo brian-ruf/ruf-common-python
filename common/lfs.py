@@ -4,10 +4,10 @@ import os
 import errno
 import sys
 import json
-from . import helper
+from common.helper import normalize_content, datetime_string
 from loguru import logger
 from pathlib import Path
-from datetime import datetime
+# from datetime import datetime
 
 # =============================================================================
 #  --- PyInstaller Interactions  ---
@@ -124,7 +124,7 @@ def getfile(file_name, normalize = True, mode="rb") -> str:
             file = open(file_name, mode)
             ret_value = file.read()
             if normalize:
-                ret_value = helper.normalize_content(ret_value)
+                ret_value = normalize_content(ret_value)
             status = True
             file.close()
         except OSError:
@@ -172,7 +172,7 @@ def backup_file(filename):
     status = False
     if chkfile(filename):
         p = Path(filename)
-        newname = f"{p.stem}_{helper.datetime_string()}{p.suffix}"
+        newname = f"{p.stem}_{datetime_string()}{p.suffix}"
         logger.debug(f"Renaming [{filename}] to [{newname}]")
         p.rename(Path(p.parent, newname ))
         status = True

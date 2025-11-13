@@ -15,7 +15,7 @@ import sqlite3
 from loguru import logger
 from . import helper
 from . import database_sqlite3
-import asyncio
+# import asyncio
 
 # List of supported databses:
 # - sqlite3: SQLite 3
@@ -411,7 +411,7 @@ class Database:
             filename = results[0].get("filename", None)
             logger.debug(f"Found filecache UUID {uuid} and filename {filename}.")
         else:
-            error(f"Unable to find cached file with UUID {uuid}.")
+            logger.error(f"Unable to find cached file with UUID {uuid}.")
 
         return filename
 
