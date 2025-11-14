@@ -9,6 +9,7 @@ from . import stats
 from . import country_code_converter
 from . import html_to_markdown
 from . import timezone_lookup
+from . import xml_formatter
 
 __all__ = [
     "data",
@@ -21,5 +22,6 @@ __all__ = [
     "stats",
     "country_code_converter",
     "html_to_markdown",
-    "timezone_lookup"
+    "timezone_lookup",
+    "xml_formatter"
 ]
