@@ -140,6 +140,7 @@ def s3_mkdir(bucket_name, path):
 def s3_get_file(bucket_name, file_name):
     global S3_CLIENT
     status = False
+    ret_value = ""
     if S3_CLIENT is not None:
         try:
             content_object = S3_CLIENT.get_object(Bucket=bucket_name, Key=file_name)
