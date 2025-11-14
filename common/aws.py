@@ -80,7 +80,7 @@ def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
                 status = True
                 S3_BUCKETS[bucket_name] = s3_bucket # Cache the Resource connection to the Bucket
             except botocore.exceptions.ClientError as error:
-                logger.warning("Unable to connect to " + bucket_name, error)
+                logger.warning(f"Unable to connect to {bucket_name}: {error}")
             except Exception as error:
                 logger.error(bucket_name + " S3 bucket not found or no access.", "(" + type(error).__name__ + ") " + str(error)) #  .message)
 
