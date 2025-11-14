@@ -38,7 +38,7 @@ def putfile(file_name, content):
             file.write(content)
             file.close()
         status = True
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} saving {file_name}: {str(error)}")
 
     return status
@@ -55,7 +55,7 @@ def get_json(file_name) -> dict:
         with open(file_name, mode='r') as file:
             json_data = json.load(file)
             file.close()
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} getting JSON file {file_name}: {str(error)}")
 
     return json_data
@@ -72,7 +72,7 @@ def save_json(data, file_name):
             json.dump(data, file, indent=2)
             file.close()
         status = True
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} saving {file_name}: {str(error)}")
 
     return status
@@ -94,7 +94,7 @@ def chkfile(path) -> bool:
             logger.error(f"Permission denied checking {path}")
         else:
             logger.error(f"Unhandled OS error {str(exc)}")
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} while checking {path}: {str(error)}")
 
     return status
@@ -156,7 +156,7 @@ def getjsonfile(file_name) -> dict:
     try:
         if json_string:
             json_results = json.loads(json_string)
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} error deserializing {file_name}: { str(error)}")
     return json_results
 
@@ -227,7 +227,7 @@ def chkdir(path, make_if_not_present = False) -> bool:
             logger.error(f"Permission denied checking {path} ")
         else:
             logger.error(f"Unhandled OS error {str(exc)}")
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} while checking {path}: {str(error)}")
 
     # print ("Status: " + out.iif(status, "TRUE", "FALSE"))
@@ -264,7 +264,7 @@ def mkdir(path) -> bool:
                     logger.error(f"Read-only file system for {path}")
                 else:
                     logger.error(f"Unhandled OS error {str(exc)}")
-        except (Exception, BaseException) as error:
+        except Exception as error:
             logger.error(f"Error making folder {path} ({type(error).__name__}): {str(error)}")
 
     return status

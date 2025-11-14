@@ -1,11 +1,11 @@
 """
 Funcitons for managing and manipulating XML, JSON and YAML content.
 """
-import json
-import os
+# import json
+# import os
 import elementpath
 import xml.etree.ElementTree as ET
-from elementpath.xpath3 import XPath3Parser
+# from elementpath.xpath3 import XPath3Parser
 from xml.etree.ElementTree import tostring
 from loguru import logger
 
@@ -29,10 +29,10 @@ def detect_data_format(content):
 def is_xml_well_formed(content):
     """Check if the provided XML string is well-formed."""
     well_formed = False
-    import elementpath
+
     from xml.etree import ElementTree
     try:
-        tree = ElementTree.fromstring(content.encode('utf_8'))
+        tree = ElementTree.fromstring(content.encode('utf_8'))  # noqa: F841
         well_formed = True
         logger.debug("CONTENT APPEARS TO BE WELL FORMED XML")
     except ElementTree.ParseError as e:
@@ -46,9 +46,8 @@ def is_json_well_formed(content):
     well_formed = False
     import json
     try:
-        json_object = json.loads(content)
+        json_object = json.loads(content)  # noqa: F841
         well_formed = True
-        status = True
         logger.debug("CONTENT APPEARS TO BE WELL FORMED JSON")
     except json.JSONDecodeError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID JSON")
@@ -61,9 +60,8 @@ def is_yaml_well_formed(content):
     well_formed = False
     import yaml
     try:    
-        yaml_object = yaml.safe_load(content)
+        yaml_object = yaml.safe_load(content)  # noqa: F841
         well_formed = True
-        status = True
         logger.debug("CONTENT APPEARS TO BE WELL FORMED YAML")
     except yaml.YAMLError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID YAML")
@@ -117,7 +115,7 @@ def xpath(tree, nsmap, xExpr, context=None):
     except SyntaxError as e:
         logger.error(f"XPath syntax error: {e} in {xExpr}")
     except IndexError as e:
-        logger.debug(f"XPath result not found for: {xExpr}")
+        logger.debug(f"XPath result not found error: {e} for: {xExpr}")
     except Exception as e:
         logger.error(f"XPath error: {e}")
     
@@ -151,7 +149,7 @@ def xpath_atomic(tree, nsmap, xExpr, context=None):
     except SyntaxError as e:
         logger.error(f"XPath syntax error: {e} in {xExpr}")
     except IndexError as e:
-        logger.debug(f"XPath result not found for: {xExpr}")
+        logger.debug(f"XPath result not found: {e} in: {xExpr}")
     except Exception as e:
         logger.error(f"Other XPath error: {e}")
 

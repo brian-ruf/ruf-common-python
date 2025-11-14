@@ -3,7 +3,6 @@ from loguru import logger
 from . import helper
 import socket
 import aiohttp
-import asyncio
 
 
 def check_internet_connection():
@@ -58,11 +57,11 @@ def api_get(endpoint, http_headers={"Content-type": "application/json"}, timeout
         logger.error(f"HTTP Error: {type(err).__name__}: {str(err)}\n--for GET {endpoint}")
     except requests.exceptions.Timeout:
         logger.error(f"TIMEOUT Error: Waited {str(timeout_seconds)}\n--for GET {endpoint} .")
-    except requests.exceptions.TooManyRedirects:
+    except requests.exceptions.TooManyRedirects as err:
         logger.error(f"Too many redirects. {type(err).__name__}: {str(err)}\n--for GET {endpoint}")
     except requests.exceptions.RequestException as err:
         logger.error(f"Unrecognized request error {type(err).__name__}: {str(err)}\n--for GET {endpoint}")
-    except (Exception, BaseException) as err:
+    except Exception as err:
         logger.error(f"Unrecognized error {type(err).__name__}: {str(err)}\n--for GET {endpoint}")
 
     if not rest_ret.status_code == 200:
@@ -84,7 +83,7 @@ def download_file(url, filename):
         #     file.write(response.content)
     except requests.exceptions.RequestException as err:
         logger.error(f"Error downloading file: {str(err)}")
-    except (Exception, BaseException) as err:
+    except Exception as err:
         logger.error(f"Unrecognized error downloading file: {str(err)}")
         
     return ret_value

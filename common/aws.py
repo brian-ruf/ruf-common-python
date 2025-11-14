@@ -1,12 +1,12 @@
 """ 
 AWS S3 interaction functions
 """
-import time 
-import json
-import os
-import sys
-import urllib.request
-import resource # used to monitor memory
+# import time 
+# import json
+# import os
+# import sys
+# import urllib.request
+# import resource # used to monitor memory
 from loguru import logger
 
 import boto3    # Library: boto3 -- for interacting with AWS S3 buckets
@@ -37,7 +37,7 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
     status = False
     s3 = None
     try:
-        if S3_CLIENT == None:
+        if S3_CLIENT is None:
             s3 = boto3.client(
                 service_name="s3",
                 region_name=aws_region,
@@ -48,7 +48,7 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
         else:
             s3 = S3_CLIENT # cache it for reuse
 
-        if S3_RESOURCE == None:
+        if S3_RESOURCE is None:
             s3 = boto3.resource(
                 service_name="s3",
                 region_name=aws_region,
@@ -59,10 +59,8 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
         else:
             s3 = S3_RESOURCE
         status = True
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error("Unable to connect to AWS S3 service in " + aws_region + ". Possible invalid key or blocked communication.", "(" + type(error).__name__ + ") " + str(error))
-    except:
-        logger.error("Unrecognized error opening S3 service connection.")
     return status
 
 # Opens a connect to an S3 bucket
@@ -71,7 +69,7 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
 def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
     global S3_RESOURCE, S3_BUCKETS
     status = False
-    if not bucket_name in S3_BUCKETS:
+    if bucket_name not in S3_BUCKETS:
         status = s3_connection(aws_region, aws_key_id, aws_key)
         if status:
             try:
@@ -81,10 +79,8 @@ def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
                 S3_BUCKETS[bucket_name] = s3_bucket # Cache the Resource connection to the Bucket
             except botocore.exceptions.ClientError as error:
                 logger.warning("Unable to connect to " + bucket_name, error)
-            except (Exception, BaseException) as error:
+            except Exception as error:
                 logger.error(bucket_name + " S3 bucket not found or no access.", "(" + type(error).__name__ + ") " + str(error)) #  .message)
-            except:
-                logger.error("Unrecognized error opening S3 bucket: " + bucket_name)
 
     return status 
 
@@ -95,25 +91,23 @@ def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
 def s3_chkdir(bucket_name, path):
     global S3_BUCKETS
     status = False
-    dir_found = False
+    # dir_found = False
     # status, s3 = s3_connection(aws_region, aws_key_id, aws_key, True)
     if bucket_name in S3_BUCKETS:    
         try:
             for obj in S3_BUCKETS[bucket_name].objects.all(): 
                 if path == obj.key or path + "/" == obj.key:
-                    # messages_out(path + " found in S3 Bucket")
+                    # logger.info(path + " found in S3 Bucket")
                     status = True
                     break
             if not status:
-                # messages_out(path + " NOT found in S3 Bucket.")
+                # logger.info(path + " NOT found in S3 Bucket.")
                 pass
-        except (Exception, BaseException) as error:
+        except Exception as error:
             if type(error).__name__ == "RequestTimeTooSkewed":
                 logger.error("Local host's time is too far out of sync with AWS time.", "** !! This is a common problem with WSL after the local host wakes from sleep. Fix time in the local time and try again.")
             else:    
                 logger.error("Error checking folder on S3 bucket. (" + type(error).__name__ + ")" + str(error))
-        except:
-            logger.error("Unrecognized error checking for datastore on S3 bucket.")
     else:
         logger.error("Attempt to check directory on S3 bucket before opening S3 bucket.")
 
@@ -133,10 +127,8 @@ def s3_mkdir(bucket_name, path):
             try:
                 S3_BUCKETS[bucket_name].put_object(Key=path + "/")
                 status = True
-            except (Exception, BaseException) as error:
+            except Exception as error:
                 logger.error("Problem on S3 creating " + path, " (" + type(error).__name__ + ") " + str(error))
-            except:
-                logger.error("Unrecognized error creating " + path + " on S3 bucket.")
     else:
         logger.error("Attempt to make directory on S3 bucket before opening S3 bucket.")
     
@@ -146,9 +138,9 @@ def s3_mkdir(bucket_name, path):
 # Returns a boolean (true if successful, false if not) and actual file content
 def s3_get_file(bucket_name, file_name):
     global S3_CLIENT
-    ret_file = ""
+    # ret_file = ""
     status = False
-    if S3_CLIENT != None:
+    if S3_CLIENT is not None:
         try:
             content_object = S3_CLIENT.get_object(Bucket=bucket_name, Key=file_name)
             ret_value = content_object['Body'].read().decode('utf-8')
@@ -160,12 +152,9 @@ def s3_get_file(bucket_name, file_name):
                 logger.error("Access Denied fetching " + file_name)
             else: # error_code == "InvalidLocationConstraint":
                 logger.error(e.response["Error"]["Code"] + " fetching " + file_name, e.response["Error"]["Message"])
-        except (Exception, BaseException) as error:
+        except Exception as error:
             ret_value = ""
             logger.error("Problem fetching " + file_name + " in S3 bucket " + bucket_name, "(" + type(error).__name__ + ") " + str(error))
-        except:
-            ret_value = ""
-            logger.error("Unknown error fetching " + file_name + " to S3 " + bucket_name)
     else:
         logger.error("Attempt to get file on S3 bucket before opening S3 bucket.")
 
@@ -176,7 +165,7 @@ def s3_get_file(bucket_name, file_name):
 def s3_put_file(bucket_name, file_name, content):
     global S3_CLIENT
     status = False
-    if S3_CLIENT != None:
+    if S3_CLIENT is not None:
         try:
             S3_CLIENT.put_object(Bucket=bucket_name, Key=file_name, Body=content, ContentEncoding="utf-8")
             status = True
@@ -191,13 +180,8 @@ def s3_put_file(bucket_name, file_name, content):
                 logger.error("Access Denied saving " + file_name)
             else: # error_code == "InvalidLocationConstraint":
                 logger.error(e.response["Error"]["Code"] + " saving " + file_name, e.response["Error"]["Message"])
-        except (Exception, BaseException) as error:
+        except Exception as error:
             logger.error("Problem saving " + file_name + " in S3 bucket " + bucket_name, "(" + type(error).__name__ + ") " + str(error))
-        except:
-            logger.error("Unknown error saving " + file_name + " to S3 " + bucket_name)
-    else:
-        logger.error("Attempt to store file on S3 bucket before opening S3 bucket.")
-
     return status
 
 # Removes a file from an S3 bucket
@@ -213,8 +197,8 @@ def s3_rm_file(bucket_name, file):
 # =============================================================================
 if __name__ == '__main__':
     # Execute when the module is not initialized from an import statement.
-    messages_out("--- START ---")
+    logger.info("--- START ---")
 
-    messages_out("This contains functions common the OSCAL services capability. This module does nothing when run individually.")
+    logger.info("This contains functions common the OSCAL services capability. This module does nothing when run individually.")
 
-    messages_out("--- END ---", linefeed=True)
+    logger.info("--- END ---", linefeed=True)

@@ -318,30 +318,30 @@ def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
     If the UUID exists, update the record. Otherwise, insert a new one.
     """
     cursor = conn.cursor()
-    ok_to_store = False
+    # ok_to_store = False
     datatype = None
 
     if isinstance(blob, (bytes)):
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'bytes'
     elif isinstance(blob, (bytearray)):
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'bytearray'
     elif isinstance(blob, str):
         blob = blob.encode('utf-8')
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'str'
     elif isinstance(blob, list):
         blob = pickle.dumps(blob)
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'list'
     elif isinstance(blob, dict):
         blob = pickle.dumps(blob)
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'dict'
     elif blob is None:
         blob = None
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'NoneType'
     else:
         raise ValueError(f"Unsupported data type: {type(blob)}")
@@ -500,7 +500,7 @@ def open_sqlite3(target):
         logger.error(f"Internal Error: {ine}")
     except sqlite3.NotSupportedError as nse:
         logger.error(f"Not Supported Error: {nse}")
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"Unrecognized error opening {target} ({type(error).__name__}): {str(error)}")
 
     if not status:
