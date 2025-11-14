@@ -1,6 +1,7 @@
 """
 Database Class for interacting with databases.
 Currently only SQLite3 is supported.
+All operations are now synchronous.
 """
 # =============================================================================
 # Based on examples and suggestions from:
@@ -93,7 +94,7 @@ class Database:
             logger.error(f"Unsupported database type: {self.type}")
 
     # -------------------------------------------------------------------------
-    async def check_for_tables(self, tables):
+    def check_for_tables(self, tables):
         """
         Check for the presence of the expected tables in the database.
         """
@@ -104,7 +105,7 @@ class Database:
             if self.table_exists(key):
                 status = status and True
             else:
-                table_exists = await self.create_table(tables[key])
+                table_exists = self.create_table(tables[key])
                 status = status and table_exists
 
         return status
@@ -193,7 +194,7 @@ class Database:
 
     # -------------------------------------------------------------------------
     # From: https://en.ittrip.xyz/python/sqlite-error-handling
-    async def db_execute(self, SQL_statements):
+    def db_execute(self, SQL_statements):
         """Executes a list of SQL statements in a transaction."""
         status = False
         cursor = self.conn.cursor()
@@ -228,7 +229,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    async def query(self, SQL_statement):
+    def query(self, SQL_statement):
         """
         Executes a query and returns the results.
         SQL_statement: The SQL statement to
@@ -247,7 +248,7 @@ class Database:
         return results
 
     # -------------------------------------------------------------------------
-    async def create_table(self, table_definition):
+    def create_table(self, table_definition):
         """
         Creates a table in the database.
         
@@ -285,14 +286,14 @@ class Database:
                 if "attributes" in field :
                     SQLstr += f" {field["attributes"]}"
             SQLstr += ");"
-            status = await self.db_execute([SQLstr])
+            status = self.db_execute([SQLstr])
         else:
             logger.error("Table name not found in table definition.")
 
         return status
 
     # -------------------------------------------------------------------------
-    async def insert(self, table_name, table_fields, table_blob_fields={}):
+    def insert(self, table_name, table_fields, table_blob_fields={}):
         """
         Inserts a record into a table.
         table_name: String 
@@ -327,7 +328,7 @@ class Database:
 
         SQLstr = f"INSERT INTO {table_name} ({", ".join(field_list)}) VALUES ({", ".join(values_list)});"
 
-        status = await self.db_execute([SQLstr])
+        status = self.db_execute([SQLstr])
 
         return status
     
@@ -345,7 +346,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    async def cache_file(self, content, uuid = None, attributes={}):
+    def cache_file(self, content, uuid = None, attributes={}):
         """
         Stores file content in the filecache table.
         content: The file contents to be cached
@@ -365,12 +366,12 @@ class Database:
 
             if self.type == "sqlite3":
                 logger.debug("Storing file in SQLite3 database")
-                status = await database_sqlite3.store_blob_to_db(self.conn, uuid, content, attributes )
+                status = database_sqlite3.store_blob_to_db(self.conn, uuid, content, attributes )
             
         return status
 
     # -------------------------------------------------------------------------
-    async def retrieve_file(self, uuid):
+    def retrieve_file(self, uuid):
         """
         Retrieves a file from the filecache table.
         uuid: The UUID of the file to be retrieved.
@@ -381,7 +382,7 @@ class Database:
         logger.debug(f"Retrieving file using uuid='{uuid}'" )
 
         if self.type == "sqlite3":
-            content_dict = await database_sqlite3.retrieve_blob_from_db(self.conn, uuid)
+            content_dict = database_sqlite3.retrieve_blob_from_db(self.conn, uuid)
             if content_dict:
                 logger.debug(f"Retrieved file with uuid='{uuid}'")
                 if "content" in content_dict:
@@ -396,7 +397,7 @@ class Database:
         return ret_value
 
     # -------------------------------------------------------------------------
-    async def retrieve_file_name(self, uuid):
+    def retrieve_file_name(self, uuid):
         """
         Retrieves the name of a file from the filecache table.
         uuid: The UUID of the file to be retrieved.
@@ -406,7 +407,7 @@ class Database:
         logger.debug(f"Retrieving filename using uuid='{uuid}'" )
 
         query = f"SELECT filename FROM filecache WHERE uuid = '{uuid}';"
-        results = await self.query(query)
+        results = self.query(query)
         if results is not None:
             filename = results[0].get("filename", None)
             logger.debug(f"Found filecache UUID {uuid} and filename {filename}.")

@@ -6,14 +6,13 @@ import os
 from loguru import logger
 import pickle
 from typing import Any, Optional, Dict
-import asyncio
 import zlib
 import sqlite3
 from common import helper
 
 FILE_CACHE_TABLE = 'filecache'
 
-async def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = None, 
+def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = None, 
                additional_fields: Optional[Dict] = None) -> str:
     """
     Save content and additional fields to a SQLite database with type preservation.
@@ -220,7 +219,7 @@ finally:
     conn.close()
 """
 
-async def update_record_from_dict(conn, table_name: str, identifier: str, update_dict: Dict) -> bool:
+def update_record_from_dict(conn, table_name: str, identifier: str, update_dict: Dict) -> bool:
     """
     Update a record in the database with new values from a dictionary.
     Only non-BLOB fields will be updated.
@@ -313,7 +312,7 @@ def get_record_metadata(conn, table_name: str, identifier: str) -> Dict:
         raise e
 
 
-async def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
+def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
     """
     Store a binary large object (BLOB) in the database.
     If the UUID exists, update the record. Otherwise, insert a new one.
@@ -396,7 +395,7 @@ async def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> boo
         conn.rollback()
         raise e
 
-async def retrieve_blob_from_db(conn, identifier: str) -> Any:
+def retrieve_blob_from_db(conn, identifier: str) -> Any:
     """
     Retrieve a binary large object (BLOB) from the database.
     
@@ -478,7 +477,7 @@ def open_sqlite3(target):
         if db_dir and not os.path.exists(db_dir):
             os.makedirs(db_dir, exist_ok=True)
 
-        conn = sqlite3.connect(target)
+        conn = sqlite3.connect(target, check_same_thread=False)
         status = True
         logger.debug(f"database opened: {target}")
     except sqlite3.IntegrityError:
