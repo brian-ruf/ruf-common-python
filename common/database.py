@@ -244,7 +244,7 @@ class Database:
             for row in cursor.fetchall():
                 results.append(dict(zip(columns, row)))
         except sqlite3.Error as e:
-            logger.error(f"Error executing query: {e}")
+            logger.error(f"Error [{e}] executing query: {SQL_statement}")
         return results
 
     # -------------------------------------------------------------------------
