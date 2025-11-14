@@ -46,7 +46,7 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
             )
             S3_CLIENT = s3
         else:
-            s3 = S3_CLIENT # cache it for reuse
+            #  s3 = S3_CLIENT # cache it for reuse
 
         if S3_RESOURCE is None:
             s3 = boto3.resource(
