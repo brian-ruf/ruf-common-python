@@ -58,7 +58,8 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
             )
             S3_RESOURCE = s3 # cache it for reuse
         else:
-            s3 = S3_RESOURCE
+            # s3 = S3_CLIENT # cache it for reuse
+            pass
         status = True
     except Exception as error:
         logger.error("Unable to connect to AWS S3 service in " + aws_region + ". Possible invalid key or blocked communication.", "(" + type(error).__name__ + ") " + str(error))
