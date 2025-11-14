@@ -22,12 +22,12 @@ def stats_summary(heading: str = "Summary") -> str:
     content = ""
 
     if heading:
-        content += f"\n\{heading}:\n"
+        content += f"\n{heading}:\n"
     else:
         content += "\n\n"
 
     for stat in stats:
-        content += (f"  {stat}: {stats[stat]}")
+        content += (f"  {stat}: {stats[stat]}\n")
 
     return content
 # -----------------------------------------------------------------------------

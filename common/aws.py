@@ -82,7 +82,7 @@ def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
             except botocore.exceptions.ClientError as error:
                 logger.warning(f"Unable to connect to {bucket_name}: {error}")
             except Exception as error:
-                logger.error(bucket_name + " S3 bucket not found or no access.", "(" + type(error).__name__ + ") " + str(error)) #  .message)
+                logger.error(f"{bucket_name} S3 bucket not found or no access. ({type(error).__name__}) {str(error)}") #  .message)
 
     return status 
 
@@ -93,7 +93,6 @@ def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
 def s3_chkdir(bucket_name, path):
     global S3_BUCKETS
     status = False
-    # dir_found = False
     # status, s3 = s3_connection(aws_region, aws_key_id, aws_key, True)
     if bucket_name in S3_BUCKETS:    
         try:
@@ -107,9 +106,9 @@ def s3_chkdir(bucket_name, path):
                 pass
         except Exception as error:
             if type(error).__name__ == "RequestTimeTooSkewed":
-                logger.error("Local host's time is too far out of sync with AWS time.", "** !! This is a common problem with WSL after the local host wakes from sleep. Fix time in the local time and try again.")
+                logger.error("Local host's time is too far out of sync with AWS time. ** !! This is a common problem with WSL after the local host wakes from sleep. Fix time in the local time and try again.")
             else:    
-                logger.error("Error checking folder on S3 bucket. (" + type(error).__name__ + ")" + str(error))
+                logger.error(f"Error checking folder on S3 bucket. ({type(error).__name__}) {str(error)}")
     else:
         logger.error("Attempt to check directory on S3 bucket before opening S3 bucket.")
 
@@ -130,7 +129,7 @@ def s3_mkdir(bucket_name, path):
                 S3_BUCKETS[bucket_name].put_object(Key=path + "/")
                 status = True
             except Exception as error:
-                logger.error("Problem on S3 creating " + path, " (" + type(error).__name__ + ") " + str(error))
+                logger.error(f"Problem on S3 creating {path} ({type(error).__name__}) {str(error)}")
     else:
         logger.error("Attempt to make directory on S3 bucket before opening S3 bucket.")
     
@@ -140,7 +139,6 @@ def s3_mkdir(bucket_name, path):
 # Returns a boolean (true if successful, false if not) and actual file content
 def s3_get_file(bucket_name, file_name):
     global S3_CLIENT
-    # ret_file = ""
     status = False
     if S3_CLIENT is not None:
         try:
@@ -153,10 +151,10 @@ def s3_get_file(bucket_name, file_name):
             if error_code == "AccessDenied":
                 logger.error("Access Denied fetching " + file_name)
             else: # error_code == "InvalidLocationConstraint":
-                logger.error(e.response["Error"]["Code"] + " fetching " + file_name, e.response["Error"]["Message"])
+                logger.error(f"{e.response['Error']['Code']} fetching {file_name}: {e.response['Error']['Message']}")
         except Exception as error:
             ret_value = ""
-            logger.error("Problem fetching " + file_name + " in S3 bucket " + bucket_name, "(" + type(error).__name__ + ") " + str(error))
+            logger.error(f"Problem fetching {file_name} in S3 bucket {bucket_name} ({type(error).__name__}) {str(error)}")
     else:
         logger.error("Attempt to get file on S3 bucket before opening S3 bucket.")
 
@@ -181,9 +179,9 @@ def s3_put_file(bucket_name, file_name, content):
             if error_code == "AccessDenied":
                 logger.error("Access Denied saving " + file_name)
             else: # error_code == "InvalidLocationConstraint":
-                logger.error(e.response["Error"]["Code"] + " saving " + file_name, e.response["Error"]["Message"])
+                logger.error(f"{e.response['Error']['Code']} saving {file_name}: {e.response['Error']['Message']}")
         except Exception as error:
-            logger.error("Problem saving " + file_name + " in S3 bucket " + bucket_name, "(" + type(error).__name__ + ") " + str(error))
+            logger.error(f"Problem saving {file_name} in S3 bucket {bucket_name} ({type(error).__name__}) {str(error)}")
     return status
 
 # Removes a file from an S3 bucket
@@ -203,4 +201,4 @@ if __name__ == '__main__':
 
     logger.info("This contains functions common the OSCAL services capability. This module does nothing when run individually.")
 
-    logger.info("--- END ---", linefeed=True)
+    logger.info("--- END ---")
