@@ -62,7 +62,7 @@ def s3_connection(aws_region, aws_key_id, aws_key, use_client=False):
             pass
         status = True
     except Exception as error:
-        logger.error("Unable to connect to AWS S3 service in " + aws_region + ". Possible invalid key or blocked communication.", "(" + type(error).__name__ + ") " + str(error))
+        logger.error(f"Unable to connect to AWS S3 service in {aws_region}. Possible invalid key or blocked communication. ({type(error).__name__}) {str(error)}")
     return status
 
 # Opens a connect to an S3 bucket
