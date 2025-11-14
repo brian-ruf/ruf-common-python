@@ -6,14 +6,13 @@ import os
 from loguru import logger
 import pickle
 from typing import Any, Optional, Dict
-import asyncio
 import zlib
 import sqlite3
 from common import helper
 
 FILE_CACHE_TABLE = 'filecache'
 
-async def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = None, 
+def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = None, 
                additional_fields: Optional[Dict] = None) -> str:
     """
     Save content and additional fields to a SQLite database with type preservation.
@@ -220,7 +219,7 @@ finally:
     conn.close()
 """
 
-async def update_record_from_dict(conn, table_name: str, identifier: str, update_dict: Dict) -> bool:
+def update_record_from_dict(conn, table_name: str, identifier: str, update_dict: Dict) -> bool:
     """
     Update a record in the database with new values from a dictionary.
     Only non-BLOB fields will be updated.
@@ -313,36 +312,36 @@ def get_record_metadata(conn, table_name: str, identifier: str) -> Dict:
         raise e
 
 
-async def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
+def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
     """
     Store a binary large object (BLOB) in the database.
     If the UUID exists, update the record. Otherwise, insert a new one.
     """
     cursor = conn.cursor()
-    ok_to_store = False
+    # ok_to_store = False
     datatype = None
 
     if isinstance(blob, (bytes)):
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'bytes'
     elif isinstance(blob, (bytearray)):
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'bytearray'
     elif isinstance(blob, str):
         blob = blob.encode('utf-8')
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'str'
     elif isinstance(blob, list):
         blob = pickle.dumps(blob)
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'list'
     elif isinstance(blob, dict):
         blob = pickle.dumps(blob)
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'dict'
     elif blob is None:
         blob = None
-        ok_to_store = True
+        # ok_to_store = True
         datatype = 'NoneType'
     else:
         raise ValueError(f"Unsupported data type: {type(blob)}")
@@ -396,7 +395,7 @@ async def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> boo
         conn.rollback()
         raise e
 
-async def retrieve_blob_from_db(conn, identifier: str) -> Any:
+def retrieve_blob_from_db(conn, identifier: str) -> Any:
     """
     Retrieve a binary large object (BLOB) from the database.
     
@@ -478,7 +477,7 @@ def open_sqlite3(target):
         if db_dir and not os.path.exists(db_dir):
             os.makedirs(db_dir, exist_ok=True)
 
-        conn = sqlite3.connect(target)
+        conn = sqlite3.connect(target, check_same_thread=False)
         status = True
         logger.debug(f"database opened: {target}")
     except sqlite3.IntegrityError:
@@ -501,7 +500,7 @@ def open_sqlite3(target):
         logger.error(f"Internal Error: {ine}")
     except sqlite3.NotSupportedError as nse:
         logger.error(f"Not Supported Error: {nse}")
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"Unrecognized error opening {target} ({type(error).__name__}): {str(error)}")
 
     if not status:

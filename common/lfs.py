@@ -4,13 +4,10 @@ import os
 import errno
 import sys
 import json
-from . import helper
-# import uuid
+from common.helper import normalize_content, datetime_string
 from loguru import logger
 from pathlib import Path
-from datetime import datetime
-
-
+# from datetime import datetime
 
 # =============================================================================
 #  --- PyInstaller Interactions  ---
@@ -41,11 +38,44 @@ def putfile(file_name, content):
             file.write(content)
             file.close()
         status = True
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} saving {file_name}: {str(error)}")
 
     return status
 
+# -----------------------------------------------------------------------------
+def get_json(file_name) -> dict:
+    """
+    Opens a JSON file and returns the contents as a dict object.
+    If an error occurs, an empty dict is returned.
+    """
+    logger.debug(f"Getting JSON file {file_name}")
+    json_data = {}
+    try:
+        with open(file_name, mode='r') as file:
+            json_data = json.load(file)
+            file.close()
+    except Exception as error:
+        logger.error(f"{type(error).__name__} getting JSON file {file_name}: {str(error)}")
+
+    return json_data
+# -----------------------------------------------------------------------------
+def save_json(data, file_name):
+    """
+    Saves a dict object as a JSON file.
+    Returns True if successful. 
+    Returns False otherwise.
+    """
+    status = False
+    try:
+        with open(file_name, mode='w') as file:
+            json.dump(data, file, indent=2)
+            file.close()
+        status = True
+    except Exception as error:
+        logger.error(f"{type(error).__name__} saving {file_name}: {str(error)}")
+
+    return status
 # -----------------------------------------------------------------------------
 def chkfile(path) -> bool:
     """
@@ -64,7 +94,7 @@ def chkfile(path) -> bool:
             logger.error(f"Permission denied checking {path}")
         else:
             logger.error(f"Unhandled OS error {str(exc)}")
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} while checking {path}: {str(error)}")
 
     return status
@@ -94,7 +124,7 @@ def getfile(file_name, normalize = True, mode="rb") -> str:
             file = open(file_name, mode)
             ret_value = file.read()
             if normalize:
-                ret_value = helper.normalize_content(ret_value)
+                ret_value = normalize_content(ret_value)
             status = True
             file.close()
         except OSError:
@@ -126,7 +156,7 @@ def getjsonfile(file_name) -> dict:
     try:
         if json_string:
             json_results = json.loads(json_string)
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} error deserializing {file_name}: { str(error)}")
     return json_results
 
@@ -142,7 +172,7 @@ def backup_file(filename):
     status = False
     if chkfile(filename):
         p = Path(filename)
-        newname = f"{p.stem}_{helper.datetime_string()}{p.suffix}"
+        newname = f"{p.stem}_{datetime_string()}{p.suffix}"
         logger.debug(f"Renaming [{filename}] to [{newname}]")
         p.rename(Path(p.parent, newname ))
         status = True
@@ -197,7 +227,7 @@ def chkdir(path, make_if_not_present = False) -> bool:
             logger.error(f"Permission denied checking {path} ")
         else:
             logger.error(f"Unhandled OS error {str(exc)}")
-    except (Exception, BaseException) as error:
+    except Exception as error:
         logger.error(f"{type(error).__name__} while checking {path}: {str(error)}")
 
     # print ("Status: " + out.iif(status, "TRUE", "FALSE"))
@@ -234,7 +264,7 @@ def mkdir(path) -> bool:
                     logger.error(f"Read-only file system for {path}")
                 else:
                     logger.error(f"Unhandled OS error {str(exc)}")
-        except (Exception, BaseException) as error:
+        except Exception as error:
             logger.error(f"Error making folder {path} ({type(error).__name__}): {str(error)}")
 
     return status

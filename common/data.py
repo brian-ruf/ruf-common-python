@@ -1,13 +1,81 @@
 """
 Funcitons for managing and manipulating XML, JSON and YAML content.
 """
-import json
-import os
+# import json
+# import os
 import elementpath
 import xml.etree.ElementTree as ET
-from elementpath.xpath3 import XPath3Parser
+# from elementpath.xpath3 import XPath3Parser
 from xml.etree.ElementTree import tostring
 from loguru import logger
+
+# -------------------------------------------------------------------------
+def detect_data_format(content):
+    """Detect whether the content is XML, JSON, or YAML based on its starting characters."""
+    content = content.lstrip()  # Remove leading whitespace
+
+    if content.startswith('<?xml') or content.startswith('<'):
+        return 'xml'
+    elif content.startswith('{') or content.startswith('['):
+        return 'json'
+    else:
+        # Simple heuristic for YAML: presence of ':' and no XML/JSON indicators
+        if ':' in content:
+            return 'yaml'
+    
+    return 'unknown'
+
+# -------------------------------------------------------------------------
+def is_xml_well_formed(content):
+    """Check if the provided XML string is well-formed."""
+    well_formed = False
+
+    from xml.etree import ElementTree
+    try:
+        tree = ElementTree.fromstring(content.encode('utf_8'))  # noqa: F841
+        well_formed = True
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED XML")
+    except ElementTree.ParseError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID XML")
+        logger.error(f"XML Parse Error: {e}")
+
+    return well_formed
+
+def is_json_well_formed(content):
+    """Check if the provided JSON string is well-formed."""
+    well_formed = False
+    import json
+    try:
+        json_object = json.loads(content)  # noqa: F841
+        well_formed = True
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED JSON")
+    except json.JSONDecodeError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID JSON")
+        logger.error(f"JSON Decode Error: {e}")
+
+    return well_formed
+
+def is_yaml_well_formed(content):
+    """Check if the provided YAML string is well-formed."""
+    well_formed = False
+    import yaml
+    try:    
+        yaml_object = yaml.safe_load(content)  # noqa: F841
+        well_formed = True
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED YAML")
+    except yaml.YAMLError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID YAML")
+        logger.error(f"YAML Error: {e}")
+
+    return well_formed
+
+
+# -------------------------------------------------------------------------
+
+
+
+
+
 
 # -------------------------------------------------------------------------
 def xpath(tree, nsmap, xExpr, context=None):
@@ -47,7 +115,7 @@ def xpath(tree, nsmap, xExpr, context=None):
     except SyntaxError as e:
         logger.error(f"XPath syntax error: {e} in {xExpr}")
     except IndexError as e:
-        logger.debug(f"XPath result not found for: {xExpr}")
+        logger.debug(f"XPath result not found error: {e} for: {xExpr}")
     except Exception as e:
         logger.error(f"XPath error: {e}")
     
@@ -81,7 +149,7 @@ def xpath_atomic(tree, nsmap, xExpr, context=None):
     except SyntaxError as e:
         logger.error(f"XPath syntax error: {e} in {xExpr}")
     except IndexError as e:
-        logger.debug(f"XPath result not found for: {xExpr}")
+        logger.debug(f"XPath result not found: {e} in: {xExpr}")
     except Exception as e:
         logger.error(f"Other XPath error: {e}")
 
