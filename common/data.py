@@ -26,75 +26,83 @@ def detect_data_format(content):
     return 'unknown'
 
 # -------------------------------------------------------------------------
-def is_xml_well_formed(content):
-    """Check if the provided XML string is well-formed."""
-    well_formed = False
-
-    from xml.etree import ElementTree
-    try:
-        tree = ElementTree.fromstring(content.encode('utf_8'))  # noqa: F841
-        well_formed = True
-        logger.debug("CONTENT APPEARS TO BE WELL FORMED XML")
-    except ElementTree.ParseError as e:
-        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID XML")
-        logger.error(f"XML Parse Error: {e}")
-
-    return well_formed
-
 # -------------------------------------------------------------------------
-def is_well_formed(content, data_format=""):
+def safe_load(content, data_format=""):
     """Check if the provided content string is well-formed based on its format."""
-    well_formed = False
+    data_object = None
     if data_format == "":
         data_format = detect_data_format(content)
 
     if data_format == "xml":
-        well_formed = is_xml_well_formed(content)
+        data_object = safe_load_xml(content)
     elif data_format == "json":
-        well_formed = is_json_well_formed(content)
+        data_object = safe_load_json(content)
     elif data_format == "yaml":
-        well_formed = is_yaml_well_formed(content)
+        data_object = safe_load_yaml(content)
     else:
         logger.error(f"Unknown data format for well-formed check: {data_format}")
+        data_object = None
 
-    return well_formed
+    return data_object
+# -------------------------------------------------------------------------
+def safe_load_xml(content):
+    """
+    Returns an XML tree if the provided XML string is well-formed.
+    If not well-formed, returns None.
+    """
+    tree = None
+
+    from xml.etree import ElementTree
+    try:
+        tree = ElementTree.fromstring(content.encode('utf_8'))  # noqa: F841
+        logger.debug("CONTENT APPEARS TO BE WELL FORMED XML")
+    except ElementTree.ParseError as e:
+        logger.debug("CONTENT DOES NOT APPEAR TO BE VALID XML")
+        logger.error(f"XML Parse Error: {e}")
+        tree = None
+
+    return tree
+
+
 
 # -------------------------------------------------------------------------
-def is_json_well_formed(content):
-    """Check if the provided JSON string is well-formed."""
-    well_formed = False
+def safe_load_json(content):
+    """
+    Returns a dict if the provided JSON string is well-formed.
+    If not well-formed, returns None.
+    """
+    data_object = None
     import json
     try:
-        json_object = json.loads(content)  # noqa: F841
-        well_formed = True
+        data_object = json.loads(content)  # noqa: F841
         logger.debug("CONTENT APPEARS TO BE WELL FORMED JSON")
     except json.JSONDecodeError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID JSON")
         logger.error(f"JSON Decode Error: {e}")
+        data_object = None
 
-    return well_formed
+    return data_object
 
 # -------------------------------------------------------------------------
-def is_yaml_well_formed(content):
-    """Check if the provided YAML string is well-formed."""
-    well_formed = False
+def safe_load_yaml(content):
+    """
+    Returns a dict if the provided YAML string is well-formed.
+    If not well-formed, returns None.
+    """
+    data_object = None
     import yaml
     try:    
-        yaml_object = yaml.safe_load(content)  # noqa: F841
-        well_formed = True
+        data_object = yaml.safe_load(content)  # noqa: F841
         logger.debug("CONTENT APPEARS TO BE WELL FORMED YAML")
     except yaml.YAMLError as e:
         logger.debug("CONTENT DOES NOT APPEAR TO BE VALID YAML")
         logger.error(f"YAML Error: {e}")
+        data_object = None
 
-    return well_formed
+    return data_object
 
 
 # -------------------------------------------------------------------------
-
-
-
-
 
 
 # -------------------------------------------------------------------------
