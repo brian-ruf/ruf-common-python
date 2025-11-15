@@ -41,6 +41,25 @@ def is_xml_well_formed(content):
 
     return well_formed
 
+# -------------------------------------------------------------------------
+def is_well_formed(content, data_format=""):
+    """Check if the provided content string is well-formed based on its format."""
+    well_formed = False
+    if data_format == "":
+        data_format = detect_data_format(content)
+
+    if data_format == "xml":
+        well_formed = is_xml_well_formed(content)
+    elif data_format == "json":
+        well_formed = is_json_well_formed(content)
+    elif data_format == "yaml":
+        well_formed = is_yaml_well_formed(content)
+    else:
+        logger.error(f"Unknown data format for well-formed check: {data_format}")
+
+    return well_formed
+
+# -------------------------------------------------------------------------
 def is_json_well_formed(content):
     """Check if the provided JSON string is well-formed."""
     well_formed = False
@@ -55,6 +74,7 @@ def is_json_well_formed(content):
 
     return well_formed
 
+# -------------------------------------------------------------------------
 def is_yaml_well_formed(content):
     """Check if the provided YAML string is well-formed."""
     well_formed = False
