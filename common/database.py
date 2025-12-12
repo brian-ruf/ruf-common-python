@@ -74,7 +74,7 @@ class Database:
         ret_val = ""
         ret_val += f"Database Type: {self.type}" 
         ret_val += f"Database Target: {self.target}" 
-        ret_val += f"Status: {iif(self.status, 'Ready', 'Not Ready')}" 
+        ret_val += f"Status: {helper.iif(self.status, 'Ready', 'Not Ready')}" 
         return ret_val
 
     # -------------------------------------------------------------------------
@@ -127,7 +127,7 @@ class Database:
 
             # If the count is 1, then table exists
             status = (cursor.fetchone()[0] == 1) 
-            logger.debug(f"Table {name} {iif(status, "exists", "does not exist")}.")
+            logger.debug(f"Table {name} {helper.iif(status, "exists", "does not exist")}.")
 
         except sqlite3.IntegrityError:
             logger.error("Integrity Error: This violates the database's integrity rules.")
@@ -322,7 +322,7 @@ class Database:
                     values_list.append(table_fields[field])
                 case bool():
                     field_list.append(field)
-                    values_list.append(iif(table_fields[field], 1, 0))
+                    values_list.append(helper.iif(table_fields[field], 1, 0))
                 case _:
                     logger.debug(f"Unhandled variable type: {field} ({str(type(table_fields[field]))})")
 
