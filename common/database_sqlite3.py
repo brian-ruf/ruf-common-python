@@ -8,7 +8,7 @@ import pickle
 from typing import Any, Optional, Dict
 import zlib
 import sqlite3
-from common import helper
+from .helper import convert_datetime_format
 
 FILE_CACHE_TABLE = 'filecache'
 
@@ -347,7 +347,7 @@ def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
         raise ValueError(f"Unsupported data type: {type(blob)}")
     
     compress = attributes.get('compress', False)
-    acquired = attributes.get('acquired', helper.oscal_date_time_with_timezone())
+    acquired = attributes.get('acquired', convert_datetime_format())
     filename = attributes.get('filename', "")
     original_location = attributes.get('original_location', "")
     file_type = attributes.get('file_type', "")
@@ -442,11 +442,11 @@ def retrieve_blob_from_db(conn, identifier: str) -> Any:
             if return_dict["datatype"] == 'bytes':
                 return_dict["content"] = bytes(return_dict["content"])
             elif return_dict["datatype"] == 'str':
-                return_dict["content"] = str(return_dict["content"])
+                return_dict["content"] = return_dict["content"].decode('utf-8')
             elif return_dict["datatype"] == 'list':
-                return_dict["content"] = list(return_dict["content"])
+                return_dict["content"] = pickle.loads(return_dict["content"])
             elif return_dict["datatype"] == 'dict':
-                return_dict["content"] = dict(return_dict["content"])
+                return_dict["content"] = pickle.loads(return_dict["content"])
             elif return_dict["datatype"] == 'NoneType':
                 return_dict["content"] = None
             elif return_dict["datatype"] == 'bytearray':
@@ -492,14 +492,8 @@ def open_sqlite3(target):
             logger.error(f"No write permission to directory: {os.path.dirname(target)}")
     except sqlite3.DatabaseError as de:
         logger.error(f"Database Error: {de}")
-    except sqlite3.DataError as dte:
-        logger.error(f"Data Error: {dte}")
     except sqlite3.InterfaceError as ie:
         logger.error(f"Interface Error: {ie}")
-    except sqlite3.InternalError as ine:
-        logger.error(f"Internal Error: {ine}")
-    except sqlite3.NotSupportedError as nse:
-        logger.error(f"Not Supported Error: {nse}")
     except Exception as error:
         logger.error(f"Unrecognized error opening {target} ({type(error).__name__}): {str(error)}")
 
