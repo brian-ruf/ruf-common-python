@@ -396,7 +396,7 @@ def retrieve_blob_from_db(conn, identifier: str) -> Any:
             elif return_dict["datatype"] == 'bytearray':
                 return_dict["content"] = bytearray(return_dict["content"])
             else:
-                raise ValueError(f"Unexpected data type: {return_dict["datatype"]}")
+                raise ValueError(f"Unexpected data type: {return_dict['datatype']}")
         else :
             raise ValueError(f"No record found with UUID: {identifier}")
 

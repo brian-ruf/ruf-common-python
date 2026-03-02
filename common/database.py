@@ -134,7 +134,7 @@ class Database:
 
             # If the count is 1, then table exists
             status = (cursor.fetchone()[0] == 1) 
-            logger.debug(f"Table {name} {helper.iif(status, "exists", "does not exist")}.")
+            logger.debug(f"Table {name} {helper.iif(status, 'exists', 'does not exist')}.")
 
         except sqlite3.IntegrityError:
             logger.error("Integrity Error: This violates the database's integrity rules.")
@@ -295,7 +295,7 @@ class Database:
                     first_field = False
                 SQLstr += field["name"] + " " + field["type"]
                 if "attributes" in field :
-                    SQLstr += f" {field["attributes"]}"
+                    SQLstr += f" {field['attributes']}"
             SQLstr += ");"
             status = self.db_execute([SQLstr])
         else:
@@ -337,7 +337,7 @@ class Database:
                 case _:
                     logger.debug(f"Unhandled variable type: {field} ({str(type(table_fields[field]))})")
 
-        SQLstr = f"INSERT INTO {table_name} ({", ".join(field_list)}) VALUES ({", ".join(values_list)});"
+        SQLstr = f"INSERT INTO {table_name} ({', '.join(field_list)}) VALUES ({', '.join(values_list)});"
 
         status = self.db_execute([SQLstr])
 

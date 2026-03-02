@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruf_common"
-version = "1.0.1-dev"
+version = "1.0.1"
 description = "Common Python utilities"
 requires-python = ">=3.9"
 dependencies = [
@@ -24,9 +24,35 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage   = "https://github.com/brian-ruf/common-python"
-Repository = "https://github.com/brian-ruf/common-python.git"
+Homepage   = "https://github.com/brian-ruf/ruf-common-python"
+Repository = "https://github.com/brian-ruf/ruf-common-python.git"
+Documentation = "https://github.com/brian-ruf/ruf-common-python#readme"
+Issues = "https://github.com/brian-ruf/ruf-common-python/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["common*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["common"]
+omit = ["tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
