@@ -1,11 +1,9 @@
 """
-Funcitons for managing and manipulating XML, JSON and YAML content.
+Functions for managing and manipulating XML, JSON and YAML content.
 """
-# import json
-# import os
+
 import elementpath
 import xml.etree.ElementTree as ET
-# from elementpath.xpath3 import XPath3Parser
 from xml.etree.ElementTree import tostring
 from loguru import logger
 
@@ -101,10 +99,6 @@ def safe_load_yaml(content):
 
     return data_object
 
-
-# -------------------------------------------------------------------------
-
-
 # -------------------------------------------------------------------------
 def xpath(tree, nsmap, xExpr, context=None):
     """
@@ -164,20 +158,24 @@ def xpath_atomic(tree, nsmap, xExpr, context=None):
     - an empty string if there is an error or if nothing is found.
     - The first result of the xpath expression as a string.
     """
-    ret_value=""
+    ret_value = ""
 
     try:
         if context is None:
             logger.debug(f"XPath Atomic: {xExpr}")
-            ret_value = elementpath.select(tree, xExpr, namespaces=nsmap)[0]
+            results = elementpath.select(tree, xExpr, namespaces=nsmap)
         else:
             logger.debug(f"XPath Atomic (Context: { context.tag }): {xExpr}")
-            ret_value = elementpath.select(context, xExpr, namespaces=nsmap)[0]
+            results = elementpath.select(context, xExpr, namespaces=nsmap)
+
+        # Check if results exist before accessing
+        if results:
+            ret_value = results[0]
+        else:
+            logger.debug(f"XPath result not found: {xExpr}")
 
     except SyntaxError as e:
         logger.error(f"XPath syntax error: {e} in {xExpr}")
-    except IndexError as e:
-        logger.debug(f"XPath result not found: {e} in: {xExpr}")
     except Exception as e:
         logger.error(f"Other XPath error: {e}")
 

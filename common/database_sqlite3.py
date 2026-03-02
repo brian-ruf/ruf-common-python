@@ -78,63 +78,7 @@ def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = 
         conn.rollback()
         logger.error(f"Error saving to database: {str(e)}")
         raise e
-    cursor = conn.cursor()
-    
-    try:
-        # Get existing table info
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        table_columns = {row[1]: row[2] for row in cursor.fetchall()}
-        
-        # Create table if it doesn't exist
-        if not table_columns:
-            cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}
-                             (uuid TEXT PRIMARY KEY,
-                              content BLOB NOT NULL,
-                              datatype TEXT NOT NULL)''')
-            table_columns = {
-                'uuid': 'TEXT',
-                'content': 'BLOB',
-                'datatype': 'TEXT'
-            }
-        
-        # Generate UUID if none provided
-        if identifier is None:
-            import uuid
-            identifier = str(uuid.uuid4())
-        
-        # Serialize the content
-        serialized_content = pickle.dumps(content)
-        content_type = type(content).__name__
-        
-        # Prepare the base data
-        field_names = ['uuid', 'content', 'datatype']
-        field_values = [identifier, serialized_content, content_type]
-        
-        # Add additional fields if they exist in the table
-        if additional_fields:
-            for field_name in table_columns.keys():
-                if field_name in ['uuid', 'content', 'datatype']:
-                    continue
-                if field_name in additional_fields:
-                    field_names.append(field_name)
-                    field_values.append(additional_fields[field_name])
-        
-        # Prepare the SQL statement
-        placeholders = ','.join(['?' for _ in field_names])
-        field_list = ','.join(field_names)
-        
-        # Insert or update the record
-        sql = f'''INSERT OR REPLACE INTO {table_name}
-                 ({field_list})
-                 VALUES ({placeholders})'''
-        
-        cursor.execute(sql, field_values)
-        conn.commit()
-        return identifier
-        
-    except Exception as e:
-        conn.rollback()
-        raise e
+
 
 def get_from_db(conn, table_name: str, identifier: str) -> Any:
     """

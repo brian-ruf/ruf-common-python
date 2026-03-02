@@ -1,0 +1,7 @@
+{
+    "venvPath": "/home/brian/rr/common",
+    "venv": "venv",
+    "pythonVersion": "3.12",
+    "include": ["common"],
+    "typeCheckingMode": "basic"
+}

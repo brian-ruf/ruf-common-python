@@ -10,12 +10,12 @@ AWS S3 interaction functions
 from loguru import logger
 
 import boto3    # Library: boto3 -- for interacting with AWS S3 buckets
-import botocore # from: boto3  -- exposes boto3 error handling details
 from botocore.exceptions import ClientError
+from typing import Any
 
 S3_BUCKETS = {}
-S3_CLIENT = None
-S3_RESOURCE = None
+S3_CLIENT: Any = None
+S3_RESOURCE: Any = None
 
 # =============================================================================
 #  --- INTERACT WITH AN S3 BUCKET ---
@@ -76,10 +76,11 @@ def s3_open_bucket(bucket_name, aws_region, aws_key_id, aws_key):
         if status:
             try:
                 status = False
-                s3_bucket = S3_RESOURCE.Bucket(bucket_name)
-                status = True
-                S3_BUCKETS[bucket_name] = s3_bucket # Cache the Resource connection to the Bucket
-            except botocore.exceptions.ClientError as error:
+                if S3_RESOURCE is not None:
+                    s3_bucket = S3_RESOURCE.Bucket(bucket_name)
+                    status = True
+                    S3_BUCKETS[bucket_name] = s3_bucket # Cache the Resource connection to the Bucket
+            except ClientError as error:
                 logger.warning(f"Unable to connect to {bucket_name}: {error}")
             except Exception as error:
                 logger.error(f"{bucket_name} S3 bucket not found or no access. ({type(error).__name__}) {str(error)}") #  .message)

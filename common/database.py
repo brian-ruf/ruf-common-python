@@ -382,7 +382,8 @@ class Database:
             uuid = str(uuid_module.uuid4())
 
         if attributes:
-            attributes["compressed"] = CONTENT_COMPRESSION
+            if attributes.get("compressed", None) is None:  
+                attributes["compressed"] = CONTENT_COMPRESSION
 
             if self.type == "sqlite3":
                 logger.debug("Storing file in SQLite3 database")
