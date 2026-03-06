@@ -26,7 +26,7 @@ from typing import Dict, Any
 # DATE/TIME FUNCTIONS
 # =============================================================================
 
-def convert_datetime_format(date_input, include_time=True, assume_localtime=True):
+def convert_datetime_format(date_input=datetime.now(), include_time=True, assume_localtime=True, format = "%Y-%m-%dT%H:%M:%SZ") -> str:
     """
     Converts various datetime inputs to a formatted date string.
     Handles both datetime objects and ISO 8601 datetime strings including:
@@ -86,12 +86,12 @@ def convert_datetime_format(date_input, include_time=True, assume_localtime=True
     try:
         # First try exact format with milliseconds
         try:
-            dt = datetime.strptime(date_input, "%Y-%m-%dT%H:%M:%S.%fZ")
+            dt = datetime.strptime(date_input, format)
             dt = dt.replace(tzinfo=pytz.UTC)  # Z explicitly means UTC
         except ValueError:
             # Try without milliseconds
             try:
-                dt = datetime.strptime(date_input, "%Y-%m-%dT%H:%M:%SZ")
+                dt = datetime.strptime(date_input, format)
                 dt = dt.replace(tzinfo=pytz.UTC)  # Z explicitly means UTC
             except ValueError:
                 # Try with timezone offset (e.g., +00:00)

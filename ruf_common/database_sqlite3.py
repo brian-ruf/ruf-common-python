@@ -8,7 +8,7 @@ import pickle
 from typing import Any, Optional, Dict
 import zlib
 import sqlite3
-from common import helper
+from .helper import convert_datetime_format
 
 FILE_CACHE_TABLE = 'filecache'
 
@@ -78,63 +78,7 @@ def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = 
         conn.rollback()
         logger.error(f"Error saving to database: {str(e)}")
         raise e
-    cursor = conn.cursor()
-    
-    try:
-        # Get existing table info
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        table_columns = {row[1]: row[2] for row in cursor.fetchall()}
-        
-        # Create table if it doesn't exist
-        if not table_columns:
-            cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name}
-                             (uuid TEXT PRIMARY KEY,
-                              content BLOB NOT NULL,
-                              datatype TEXT NOT NULL)''')
-            table_columns = {
-                'uuid': 'TEXT',
-                'content': 'BLOB',
-                'datatype': 'TEXT'
-            }
-        
-        # Generate UUID if none provided
-        if identifier is None:
-            import uuid
-            identifier = str(uuid.uuid4())
-        
-        # Serialize the content
-        serialized_content = pickle.dumps(content)
-        content_type = type(content).__name__
-        
-        # Prepare the base data
-        field_names = ['uuid', 'content', 'datatype']
-        field_values = [identifier, serialized_content, content_type]
-        
-        # Add additional fields if they exist in the table
-        if additional_fields:
-            for field_name in table_columns.keys():
-                if field_name in ['uuid', 'content', 'datatype']:
-                    continue
-                if field_name in additional_fields:
-                    field_names.append(field_name)
-                    field_values.append(additional_fields[field_name])
-        
-        # Prepare the SQL statement
-        placeholders = ','.join(['?' for _ in field_names])
-        field_list = ','.join(field_names)
-        
-        # Insert or update the record
-        sql = f'''INSERT OR REPLACE INTO {table_name}
-                 ({field_list})
-                 VALUES ({placeholders})'''
-        
-        cursor.execute(sql, field_values)
-        conn.commit()
-        return identifier
-        
-    except Exception as e:
-        conn.rollback()
-        raise e
+
 
 def get_from_db(conn, table_name: str, identifier: str) -> Any:
     """
@@ -347,7 +291,7 @@ def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
         raise ValueError(f"Unsupported data type: {type(blob)}")
     
     compress = attributes.get('compress', False)
-    acquired = attributes.get('acquired', helper.oscal_date_time_with_timezone())
+    acquired = attributes.get('acquired', convert_datetime_format())
     filename = attributes.get('filename', "")
     original_location = attributes.get('original_location', "")
     file_type = attributes.get('file_type', "")
@@ -442,17 +386,17 @@ def retrieve_blob_from_db(conn, identifier: str) -> Any:
             if return_dict["datatype"] == 'bytes':
                 return_dict["content"] = bytes(return_dict["content"])
             elif return_dict["datatype"] == 'str':
-                return_dict["content"] = str(return_dict["content"])
+                return_dict["content"] = return_dict["content"].decode('utf-8')
             elif return_dict["datatype"] == 'list':
-                return_dict["content"] = list(return_dict["content"])
+                return_dict["content"] = pickle.loads(return_dict["content"])
             elif return_dict["datatype"] == 'dict':
-                return_dict["content"] = dict(return_dict["content"])
+                return_dict["content"] = pickle.loads(return_dict["content"])
             elif return_dict["datatype"] == 'NoneType':
                 return_dict["content"] = None
             elif return_dict["datatype"] == 'bytearray':
                 return_dict["content"] = bytearray(return_dict["content"])
             else:
-                raise ValueError(f"Unexpected data type: {return_dict["datatype"]}")
+                raise ValueError(f"Unexpected data type: {return_dict['datatype']}")
         else :
             raise ValueError(f"No record found with UUID: {identifier}")
 
@@ -492,14 +436,8 @@ def open_sqlite3(target):
             logger.error(f"No write permission to directory: {os.path.dirname(target)}")
     except sqlite3.DatabaseError as de:
         logger.error(f"Database Error: {de}")
-    except sqlite3.DataError as dte:
-        logger.error(f"Data Error: {dte}")
     except sqlite3.InterfaceError as ie:
         logger.error(f"Interface Error: {ie}")
-    except sqlite3.InternalError as ine:
-        logger.error(f"Internal Error: {ine}")
-    except sqlite3.NotSupportedError as nse:
-        logger.error(f"Not Supported Error: {nse}")
     except Exception as error:
         logger.error(f"Unrecognized error opening {target} ({type(error).__name__}): {str(error)}")
 

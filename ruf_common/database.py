@@ -13,8 +13,10 @@ All operations are now synchronous.
 # TODL: Ensure all sqlite3 specific code is in database_sqlite3.py
 # =============================================================================
 import sqlite3
+import uuid as uuid_module
+from typing import Optional
 from loguru import logger
-from . import helper
+from . import helper 
 from . import database_sqlite3
 # import asyncio
 
@@ -60,8 +62,8 @@ class Database:
         """
         self.target = target # The path and filename of the database
         self.type = type     # The type of database (sqlite3, mysql, etc.)
-        self.conn = None     # The database connection object
-        self.cursor = None   # The database cursor object
+        self.conn: Optional[sqlite3.Connection] = None     # The database connection object
+        self.cursor: Optional[sqlite3.Cursor] = None   # The database cursor object
         self.status = False  # True if open and ready for use
         self.last_operation = "" # The last operation performed on the database
         self.last_operation_result = "" # The result of the last operation performed on the database
@@ -74,7 +76,7 @@ class Database:
         ret_val = ""
         ret_val += f"Database Type: {self.type}" 
         ret_val += f"Database Target: {self.target}" 
-        ret_val += f"Status: {helper.iff(self.status, 'Ready', 'Not Ready')}" 
+        ret_val += f"Status: {helper.iif(self.status, 'Ready', 'Not Ready')}" 
         return ret_val
 
     # -------------------------------------------------------------------------
@@ -117,8 +119,13 @@ class Database:
         - name: A string containing the name of the table
         Returns: True if the table exits. False otherwise. 
         """
+        status = False
+
+        if self.conn is None:
+            logger.error("Database connection is not open.")
+            return status
+
         try:
-            status = False
 
             statement = f"SELECT count(name) FROM sqlite_master WHERE type='table' AND name='{name}'"
             # Get the count of tables with the name
@@ -127,7 +134,7 @@ class Database:
 
             # If the count is 1, then table exists
             status = (cursor.fetchone()[0] == 1) 
-            logger.debug(f"Table {name} {helper.iif(status, "exists", "does not exist")}.")
+            logger.debug(f"Table {name} {helper.iif(status, 'exists', 'does not exist')}.")
 
         except sqlite3.IntegrityError:
             logger.error("Integrity Error: This violates the database's integrity rules.")
@@ -137,16 +144,11 @@ class Database:
             logger.error(f"Operational Error: {oe}")
         except sqlite3.DatabaseError as de:
             logger.error(f"Database Error: {de}")
-        except sqlite3.DataError as dte:
-            logger.error(f"Data Error: {dte}")
         except sqlite3.InterfaceError as ie:
             logger.error(f"Interface Error: {ie}")
-        except sqlite3.InternalError as ine:
-            logger.error(f"Internal Error: {ine}")
-        except sqlite3.NotSupportedError as nse:
-            logger.error(f"Not Supported Error: {nse}")
         except (Exception, BaseException) as error:
             logger.error(f"Unrecognized error checking for table {name} ({type(error).__name__}): {str(error)}")
+
         return status
 
     # -------------------------------------------------------------------------
@@ -161,6 +163,11 @@ class Database:
                  (int) -1 if an error occurs  
         """
         count = -1
+
+        if self.conn is None:
+            logger.error("Database connection is not open.")
+            return count
+
         try:
 
             statement = f"SELECT count(*) FROM {table} WHERE {where_clause}"
@@ -180,14 +187,8 @@ class Database:
             logger.error(f"Operational Error: {oe}")
         except sqlite3.DatabaseError as de:
             logger.error(f"Database Error: {de}")
-        except sqlite3.DataError as dte:
-            logger.error(f"Data Error: {dte}")
         except sqlite3.InterfaceError as ie:
             logger.error(f"Interface Error: {ie}")
-        except sqlite3.InternalError as ine:
-            logger.error(f"Internal Error: {ine}")
-        except sqlite3.NotSupportedError as nse:
-            logger.error(f"Not Supported Error: {nse}")
         except (Exception, BaseException) as error:
             logger.error(f"Unrecognized error checking for records in {table} ({type(error).__name__}): {str(error)}")
         return count
@@ -197,6 +198,11 @@ class Database:
     def db_execute(self, SQL_statements):
         """Executes a list of SQL statements in a transaction."""
         status = False
+
+        if self.conn is None:
+            logger.error("Database connection is not open.")
+            return status
+
         cursor = self.conn.cursor()
 
         try:
@@ -237,6 +243,11 @@ class Database:
         Returns: A list of dictionaries containing the results.
         """
         results = []
+
+        if self.conn is None:
+            logger.error("Database connection is not open.")
+            return results
+
         try:
             cursor = self.conn.cursor()
             cursor.execute(SQL_statement)
@@ -284,7 +295,7 @@ class Database:
                     first_field = False
                 SQLstr += field["name"] + " " + field["type"]
                 if "attributes" in field :
-                    SQLstr += f" {field["attributes"]}"
+                    SQLstr += f" {field['attributes']}"
             SQLstr += ");"
             status = self.db_execute([SQLstr])
         else:
@@ -326,7 +337,7 @@ class Database:
                 case _:
                     logger.debug(f"Unhandled variable type: {field} ({str(type(table_fields[field]))})")
 
-        SQLstr = f"INSERT INTO {table_name} ({", ".join(field_list)}) VALUES ({", ".join(values_list)});"
+        SQLstr = f"INSERT INTO {table_name} ({', '.join(field_list)}) VALUES ({', '.join(values_list)});"
 
         status = self.db_execute([SQLstr])
 
@@ -361,8 +372,18 @@ class Database:
         """
         status = False
         logger.debug("Caching file" )
+
+        if self.conn is None:
+            logger.error("Database connection is not open.")
+            return status
+
+        # Generate UUID if not provided
+        if uuid is None:
+            uuid = str(uuid_module.uuid4())
+
         if attributes:
-            attributes["compressed"] = CONTENT_COMPRESSION
+            if attributes.get("compressed", None) is None:  
+                attributes["compressed"] = CONTENT_COMPRESSION
 
             if self.type == "sqlite3":
                 logger.debug("Storing file in SQLite3 database")

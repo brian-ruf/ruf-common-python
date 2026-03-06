@@ -29,7 +29,7 @@ Programmatic API Functions:
    - recursive=True searches subdirectories
 
 Usage Examples:
-    from common.xml_formatter import format_xml_string, format_xml_file_programmatic
+    from ruf_common.xml_formatter import format_xml_string, format_xml_file_programmatic
     
     # Format XML content in memory
     formatted = format_xml_string('<root><item>content</item></root>')
