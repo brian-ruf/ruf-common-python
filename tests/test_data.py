@@ -1,7 +1,7 @@
 """Tests for the data module."""
 
 import pytest
-from common import data
+from ruf_common import data
 
 
 class TestData:

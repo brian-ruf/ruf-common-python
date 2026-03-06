@@ -4,7 +4,7 @@ import os
 import errno
 import sys
 import json
-from common.helper import normalize_content, datetime_string
+from ruf_common.helper import normalize_content, datetime_string
 from loguru import logger
 from pathlib import Path
 # from datetime import datetime

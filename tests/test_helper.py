@@ -1,7 +1,7 @@
 """Tests for the helper module."""
 
 import pytest
-from common import helper
+from ruf_common import helper
 
 
 class TestHelper:

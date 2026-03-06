@@ -2,6 +2,6 @@
     "venvPath": "/home/brian/rr/common",
     "venv": "venv",
     "pythonVersion": "3.12",
-    "include": ["common"],
+    "include": ["ruf_common"],
     "typeCheckingMode": "basic"
 }
