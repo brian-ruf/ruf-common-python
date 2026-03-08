@@ -14,17 +14,95 @@ from pathlib import Path
 # =============================================================================
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
     return os.path.join(base_path, relative_path)
+
 # =============================================================================
 #  --- LFS File Level Interactions ---
 # =============================================================================
 
+def zip_file(file_to_zip, zip_filename, overwrite=False, recurse=False):
+    """
+    Creates a zip archive containing files and/or directories.
+
+    Args:
+        file_to_zip (str): The path to the file, directory, or pattern you want to zip.
+                          Can be a single file, directory path, or glob pattern (e.g., "*.py").
+        zip_filename (str): The desired name for the output zip file (e.g., "archive.zip").
+        overwrite (bool): If True, overwrites existing zip file. If False, returns error if file exists.
+        recurse (bool): If True and file_to_zip is a directory, recursively includes subdirectories.
+                       If False, only includes files directly in the specified directory.
+    """
+    import zipfile
+    import glob
+    status = False
+
+    try:
+
+        if overwrite:
+            if os.path.exists(zip_filename):
+                os.remove(zip_filename)
+                logger.info(f"'{zip_filename}' exists. Removing.")
+        else:
+            if os.path.exists(zip_filename):
+                logger.error(f"Zip file '{zip_filename}' already exists. Overwrite is blocked.")
+                return
+
+        # Collect all files to be zipped
+        files_to_zip = []
+        
+        # Check if it's a pattern (contains wildcards)
+        if '*' in file_to_zip or '?' in file_to_zip:
+            files_to_zip = glob.glob(file_to_zip, recursive=recurse)
+        elif os.path.isfile(file_to_zip):
+            # Single file
+            files_to_zip = [file_to_zip]
+        elif os.path.isdir(file_to_zip):
+            # Directory
+            if recurse:
+                # Recursively walk the directory
+                for root, dirs, files in os.walk(file_to_zip):
+                    for file in files:
+                        files_to_zip.append(os.path.join(root, file))
+            else:
+                # Only files in the directory (no subdirectories)
+                for item in os.listdir(file_to_zip):
+                    item_path = os.path.join(file_to_zip, item)
+                    if os.path.isfile(item_path):
+                        files_to_zip.append(item_path)
+        else:
+            logger.error(f"Path '{file_to_zip}' not found or is not a valid file/directory/pattern.")
+            return False
+
+        if not files_to_zip:
+            logger.warning(f"No files found matching '{file_to_zip}'.")
+            return False
+
+        # Use a 'with' statement to ensure the zip file is closed automatically
+        with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for file_path in files_to_zip:
+                # Determine the archive name (relative path within zip)
+                if os.path.isdir(file_to_zip):
+                    # For directories, preserve relative structure
+                    arcname = os.path.relpath(file_path, file_to_zip)
+                else:
+                    # For files and patterns, use just the filename
+                    arcname = os.path.basename(file_path)
+                
+                zipf.write(file_path, arcname=arcname)
+                logger.debug(f"Added {file_path} as {arcname}")
+        
+        logger.debug(f"Successfully created {zip_filename} containing {len(files_to_zip)} file(s)")
+        status = True
+    except FileNotFoundError:
+        logger.error(f"Error: The file '{file_to_zip}' was not found.")
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+
+    return status
+
+# -----------------------------------------------------------------------------
 def putfile(file_name, content):
     """
     Saves content to a file.
