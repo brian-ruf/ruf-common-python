@@ -557,17 +557,16 @@ def tell_user(message, log_as = ""):
     Outputs a message to the console.
     """
     print(message)
-    match log_as:
-        case "info":
-            logger.info(message)
-        case "warning":
-            logger.warning(message)
-        case "error":
-            logger.error(message)
-        case "debug":
-            logger.debug(message)
-        case _:
-            pass # no logging
+    if log_as == "info":
+        logger.info(message)
+    elif log_as == "warning":
+        logger.warning(message)
+    elif log_as == "error":
+        logger.error(message)
+    elif log_as == "debug":
+        logger.debug(message)
+    else:
+        pass # no logging
 
 # -----------------------------------------------------------------------------
 def processing(out_char = "."):

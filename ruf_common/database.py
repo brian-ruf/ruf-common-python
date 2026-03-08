@@ -324,18 +324,18 @@ class Database:
         field_list = []
         values_list = []
         for field in table_fields:
-            match table_fields[field]:
-                case str():
-                    field_list.append(field)
-                    values_list.append(f"'{table_fields[field]}'")
-                case int(), float():
-                    field_list.append(field)
-                    values_list.append(table_fields[field])
-                case bool():
-                    field_list.append(field)
-                    values_list.append(helper.iif(table_fields[field], 1, 0))
-                case _:
-                    logger.debug(f"Unhandled variable type: {field} ({str(type(table_fields[field]))})")
+            value = table_fields[field]
+            if isinstance(value, str):
+                field_list.append(field)
+                values_list.append(f"'{value.replace(chr(39), chr(39)+chr(39))}'")
+            elif isinstance(value, bool):
+                field_list.append(field)
+                values_list.append(str(helper.iif(value, 1, 0)))
+            elif isinstance(value, (int, float)):
+                field_list.append(field)
+                values_list.append(str(value))
+            else:
+                logger.debug(f"Unhandled variable type: {field} ({str(type(value))})")
 
         SQLstr = f"INSERT INTO {table_name} ({', '.join(field_list)}) VALUES ({', '.join(values_list)});"
 
@@ -457,20 +457,19 @@ def db_datatype(datatype, database_type):
 
 
     if database_type == "sqlite3":
-        match datatype:
-            case "string", "":
-                aligned_datatype = "TEXT"
-            case "date-time":
-                aligned_datatype = "NUMERIC"
-            case "integer", "boolean":
-                aligned_datatype = "INTEGER"
-            case "REAL":
-                aligned_datatype = "REAL"
-            case "BLOB":
-                aligned_datatype = "BLOB"
-            case _:
-                logger.warning(f"{datatype} is an unrecognized datatype for {database_type}.")
-                aligned_datatype = "TEXT"
+        if datatype in ("string", ""):
+            aligned_datatype = "TEXT"
+        elif datatype == "date-time":
+            aligned_datatype = "NUMERIC"
+        elif datatype in ("integer", "boolean"):
+            aligned_datatype = "INTEGER"
+        elif datatype == "REAL":
+            aligned_datatype = "REAL"
+        elif datatype == "BLOB":
+            aligned_datatype = "BLOB"
+        else:
+            logger.warning(f"{datatype} is an unrecognized datatype for {database_type}.")
+            aligned_datatype = "TEXT"
     else:
         logger.error(f"Unsupported database type: {database_type}")
         aligned_datatype = "TEXT"

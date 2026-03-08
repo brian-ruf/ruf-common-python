@@ -19,6 +19,8 @@ Functions for interacting with the local file system (LFS).
 - [`mkdir`](#mkdirpath) - Create directory tree
 - [`get_app_location`](#get_app_location) - Get app directory
 
+- [`zip_file`]()
+
 **PyInstaller:**
 - [`resource_path`](#resource_pathrelative_path) - Get resource path
 
@@ -28,6 +30,18 @@ Functions for interacting with the local file system (LFS).
 ---
 
 ## File Operations
+
+### `zip_file(file_to_zip, zip_filename, overwrite=False, recurse=False)`
+
+Compresses one or more files into a single ZIP file.
+
+**Parameters:**
+- `file_to_zip` (str): Filename/pattern to compress, including path
+- `zip_filename` (str): ZIP filename to create, including path
+- `overwrite` (bool): Overwrite existing ZIP file
+- `recurse` (bool): Recurse child directories. Ignored if `files_to_zip` is an individual file.
+
+**Returns:** `bool` - `True` if the zip file was successfully created.
 
 ### `chkfile(path)`
 
