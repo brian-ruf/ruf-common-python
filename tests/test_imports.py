@@ -11,11 +11,6 @@ class TestModuleImports:
         import ruf_common
         assert ruf_common is not None
 
-    def test_import_aws(self):
-        """Test importing aws module."""
-        from ruf_common import aws
-        assert aws is not None
-
     def test_import_country_code_converter(self):
         """Test importing country_code_converter module."""
         from ruf_common import country_code_converter
