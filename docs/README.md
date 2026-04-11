@@ -60,7 +60,6 @@ parsed = data.safe_load(content)  # {'key': 'value'}
 
 ### File & Storage
 - [lfs](lfs.md) - Local file system operations
-- [aws](aws.md) - AWS S3 storage operations
 - [database](database.md) - SQLite3 database with file caching
 
 ### Network

@@ -30,7 +30,6 @@ from ruf_common import data, helper, lfs
 
 The following modules are available:
 
-- `aws`: Functions for interacting with AWS services
 - `country_code_converter`: Functions for converting between country code formats
 - `data`: Functions for managing and manipulating XML, JSON and YAML content
 - `database`: Functions for interacting with a database. These functions operate the same for all supported databases
