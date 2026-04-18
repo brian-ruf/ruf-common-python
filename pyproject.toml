@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruf-common"
-version = "2.0.0"
+version = "2.0.1"
 description = "Functions common to several of Brian's Python projects."
 requires-python = ">=3.9"
 license = "MIT"
