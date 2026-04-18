@@ -1,3 +1,5 @@
+from loguru import logger
+
 from . import country_code_converter
 from . import data
 from . import database
@@ -9,6 +11,10 @@ from . import logging
 from . import stats
 from . import timezone_lookup
 from . import xml_formatter
+
+# Disable logging by default; consumers can enable with:
+#   logger.enable("ruf_common")
+logger.disable("ruf_common")
 
 __all__ = [
     "data",
