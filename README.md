@@ -6,7 +6,7 @@
 
 ## Overview
 
-A collection of Python utility modules for common tasks including file operations, data format conversions, database interactions, AWS services, and more.
+A collection of Python utility modules for common tasks including file operations, data format conversions, database interactions, and more.
 
 Feedback welcome via [GitHub issues](https://github.com/brian-ruf/ruf-common-python/issues). While I will try to address issues in a timely manner, I only intend to invest in feature requests that align with my project work. Feel free to contribute backward compatible enhancements.
 

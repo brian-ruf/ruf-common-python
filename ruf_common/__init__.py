@@ -16,7 +16,6 @@ __all__ = [
     "lfs",
     "helper",
     "network",
-    "aws",
     "logging",
     "stats",
     "country_code_converter",

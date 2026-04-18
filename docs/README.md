@@ -12,7 +12,6 @@ pip install ruf-common
 
 | Module | Description |
 |--------|-------------|
-| [aws](aws.md) | AWS S3 bucket operations (connect, read, write, check) |
 | [country_code_converter](country_code_converter.md) | Convert country names to ISO 3166-1 alpha-2 codes |
 | [data](data.md) | XML, JSON, YAML parsing, XPath queries, format detection |
 | [database](database.md) | Database class with SQLite3 support, file caching |
