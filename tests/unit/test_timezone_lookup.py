@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from ruf_common import timezone_lookup
 
 # The module imports Nominatim and TimezoneFinder at the top level, so we must

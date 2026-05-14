@@ -1,6 +1,7 @@
 """Tests for the stats module."""
 
 import pytest
+
 import ruf_common.stats as stats_module
 
 

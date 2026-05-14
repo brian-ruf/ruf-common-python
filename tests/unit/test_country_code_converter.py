@@ -1,6 +1,5 @@
 """Tests for the country_code_converter module."""
 
-import pytest
 
 from ruf_common import country_code_converter as ccc
 

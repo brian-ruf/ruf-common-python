@@ -1,12 +1,9 @@
 """Tests for the xml_formatter module."""
 
-import tempfile
-import os
 
 import pytest
 
 from ruf_common import xml_formatter
-
 
 SIMPLE_XML = "<root><child>text</child></root>"
 MULTI_CHILD_XML = "<root><a>1</a><b>2</b><c>3</c></root>"

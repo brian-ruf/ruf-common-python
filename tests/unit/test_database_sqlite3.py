@@ -1,12 +1,10 @@
 """Tests for the database_sqlite3 module."""
 
 import sqlite3
-import pickle
 
 import pytest
 
 from ruf_common import database_sqlite3
-
 
 FILECACHE_DDL = """
     CREATE TABLE IF NOT EXISTS filecache (
@@ -87,7 +85,7 @@ class TestSaveToDb:
         assert result == ""
 
     def test_update_existing_record(self, conn_with_items):
-        uid = database_sqlite3.save_to_db(conn_with_items, "items", "original", identifier="fixed-id")
+        database_sqlite3.save_to_db(conn_with_items, "items", "original", identifier="fixed-id")
         uid2 = database_sqlite3.save_to_db(conn_with_items, "items", "updated", identifier="fixed-id")
         assert uid2 == "fixed-id"
         count = conn_with_items.execute("SELECT COUNT(*) FROM items WHERE uuid=?", ("fixed-id",)).fetchone()[0]

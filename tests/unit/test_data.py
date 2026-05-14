@@ -6,7 +6,6 @@ import pytest
 
 from ruf_common import data
 
-
 SIMPLE_XML = "<root><child attr='val'>text</child></root>"
 NS_XML = '<root xmlns:ns="http://example.com"><ns:child>text</ns:child></root>'
 SIMPLE_JSON = '{"key": "value", "num": 42}'

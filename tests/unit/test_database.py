@@ -2,8 +2,7 @@
 
 import pytest
 
-from ruf_common.database import Database, db_datatype, OSCAL_COMMON_TABLES
-
+from ruf_common.database import OSCAL_COMMON_TABLES, Database, db_datatype
 
 # create_table expects SQL types directly and "attributes" (not "constraints")
 TABLE_DEF = {

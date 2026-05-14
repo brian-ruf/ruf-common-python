@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from ruf_common import network
 
 
@@ -71,7 +69,6 @@ class TestDownloadFile:
 
 class TestAsyncApiGet:
     def test_is_coroutine(self):
-        import asyncio
         import inspect
         assert inspect.iscoroutinefunction(network.async_api_get)
 

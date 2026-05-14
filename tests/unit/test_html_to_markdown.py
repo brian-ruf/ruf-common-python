@@ -1,6 +1,5 @@
 """Tests for the html_to_markdown module."""
 
-import pytest
 
 from ruf_common.html_to_markdown import html_to_markdown
 

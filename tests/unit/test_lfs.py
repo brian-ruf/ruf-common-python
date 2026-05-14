@@ -4,8 +4,6 @@ import json
 import os
 import zipfile
 
-import pytest
-
 from ruf_common import lfs
 
 

@@ -1,6 +1,7 @@
 """
 Functions for managing and manipulating XML, JSON and YAML content.
 """
+from __future__ import annotations
 
 import elementpath
 import xml.etree.ElementTree as ET
