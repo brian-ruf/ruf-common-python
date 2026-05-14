@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-PACKAGE_DIR = Path(__file__).resolve().parent.parent / "ruf_common"
+PACKAGE_DIR = Path(__file__).resolve().parent.parent.parent / "ruf_common"
 
 # Internal sub-modules that are not part of the public API
 # (imported by other modules, not re-exported from __init__.py)

@@ -10,11 +10,11 @@ All operations are now synchronous.
 # =============================================================================
 # TODO: Evaluate using SQLAlchemy for database handling
 # TODO: Handle additional database types beyond sqlite3
-# TODL: Ensure all sqlite3 specific code is in database_sqlite3.py
+# TODO: Ensure all sqlite3 specific code is in database_sqlite3.py
 # =============================================================================
 import sqlite3
 import uuid as uuid_module
-from typing import Optional
+from typing import Any, Optional, Union
 from loguru import logger
 from . import helper 
 from . import database_sqlite3
@@ -51,7 +51,7 @@ OSCAL_COMMON_TABLES["filecache"] = {
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Database:
-    def __init__(self, type, target):
+    def __init__(self, type: str, target: str) -> None:
         """
         Creates a database object and opens the database.
         type: The type of database. Supported types:
@@ -72,7 +72,7 @@ class Database:
         self.open()
 
     # -------------------------------------------------------------------------
-    def __str__(self):
+    def __str__(self) -> str:
         ret_val = ""
         ret_val += f"Database Type: {self.type}" 
         ret_val += f"Database Target: {self.target}" 
@@ -80,12 +80,12 @@ class Database:
         return ret_val
 
     # -------------------------------------------------------------------------
-    def __del__(self):
+    def __del__(self) -> None:
         if self.conn:
             self.conn.close()            
 
     # -------------------------------------------------------------------------
-    def open(self):
+    def open(self) -> None:
         """Executes the correct open function/tasks based on the database type."""
 
         if self.type == "sqlite3":
@@ -96,7 +96,7 @@ class Database:
             logger.error(f"Unsupported database type: {self.type}")
 
     # -------------------------------------------------------------------------
-    def check_for_tables(self, tables):
+    def check_for_tables(self, tables: dict) -> bool:
         """
         Check for the presence of the expected tables in the database.
         """
@@ -113,7 +113,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    def table_exists(self, name):
+    def table_exists(self, name: str) -> bool:
         """
         Determines if a table exists in the database
         - name: A string containing the name of the table
@@ -152,7 +152,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    def record_count(self, table, where_clause):
+    def record_count(self, table: str, where_clause: str) -> int:
         """
         Returns the number of records that include a value
         - table: A string containing the name of the table
@@ -195,7 +195,7 @@ class Database:
 
     # -------------------------------------------------------------------------
     # From: https://en.ittrip.xyz/python/sqlite-error-handling
-    def db_execute(self, SQL_statements):
+    def db_execute(self, SQL_statements: Union[str, list[str]]) -> bool:
         """Executes a list of SQL statements in a transaction."""
         status = False
 
@@ -235,7 +235,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    def query(self, SQL_statement):
+    def query(self, SQL_statement: str) -> list[dict]:
         """
         Executes a query and returns the results.
         SQL_statement: The SQL statement to
@@ -259,7 +259,7 @@ class Database:
         return results
 
     # -------------------------------------------------------------------------
-    def create_table(self, table_definition):
+    def create_table(self, table_definition: dict) -> bool:
         """
         Creates a table in the database.
         
@@ -304,7 +304,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    def insert(self, table_name, table_fields, table_blob_fields={}):
+    def insert(self, table_name: str, table_fields: dict, table_blob_fields: dict = {}) -> bool:
         """
         Inserts a record into a table.
         table_name: String 
@@ -344,7 +344,7 @@ class Database:
         return status
     
     # -------------------------------------------------------------------------
-    def drop_table(self, table_name):
+    def drop_table(self, table_name: str) -> bool:
         """
         Drops a table from the database.
         table_name: String 
@@ -357,7 +357,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    def cache_file(self, content, uuid = None, attributes={}):
+    def cache_file(self, content: Any, uuid: Optional[str] = None, attributes: dict = {}) -> Union[str, bool]:
         """
         Stores file content in the filecache table.
         content: The file contents to be cached
@@ -392,7 +392,7 @@ class Database:
         return status
 
     # -------------------------------------------------------------------------
-    def retrieve_file(self, uuid):
+    def retrieve_file(self, uuid: str) -> Any:
         """
         Retrieves a file from the filecache table.
         uuid: The UUID of the file to be retrieved.
@@ -418,7 +418,7 @@ class Database:
         return ret_value
 
     # -------------------------------------------------------------------------
-    def retrieve_file_name(self, uuid):
+    def retrieve_file_name(self, uuid: str) -> Optional[str]:
         """
         Retrieves the name of a file from the filecache table.
         uuid: The UUID of the file to be retrieved.
@@ -438,7 +438,7 @@ class Database:
         return filename
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def oscal_datatype(datatype):
+def oscal_datatype(datatype: str) -> Optional[str]:
     """
     Aligns the datatype to the OSCAL datatype.
     datatype: The datatype to be aligned
@@ -446,7 +446,7 @@ def oscal_datatype(datatype):
     """
 
 # -----------------------------------------------------------------------------
-def db_datatype(datatype, database_type):
+def db_datatype(datatype: str, database_type: str) -> str:
     """
     Aligns the datatype to the database type.
     datatype: The datatype to be aligned

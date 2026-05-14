@@ -1,14 +1,14 @@
 from loguru import logger
-from typing import List, Dict, Optional
+from typing import Any, List, Dict, Optional
 import sys
 
 class DictSink:
     """Custom sink that captures log records as dictionaries."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.records: List[Dict] = []
     
-    def write(self, message):
+    def write(self, message: Any) -> None:
         record = message.record
         log_entry = {
             'timestamp': record['time'].isoformat(),
@@ -28,7 +28,7 @@ class DictSink:
     def get_records(self) -> List[Dict]:
         return self.records.copy()
     
-    def clear(self):
+    def clear(self) -> None:
         self.records.clear()
 
 
@@ -87,12 +87,12 @@ class LoggableMixin:
             return self._dict_sink.get_records()
         return []
     
-    def clear_logs(self):
+    def clear_logs(self) -> None:
         """Clear captured log records."""
         if hasattr(self, '_dict_sink') and self._dict_sink:
             self._dict_sink.clear()
     
-    def cleanup_logging(self):
+    def cleanup_logging(self) -> None:
         """Remove all handlers added by this instance."""
         if hasattr(self, '_handler_ids'):
             for handler_id in self._handler_ids:

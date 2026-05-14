@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruf-common"
-version = "2.0.3"
+version = "2.1.0"
 description = "Functions common to several of Brian's Python projects."
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "Brian Ruf", email = "Brian@RufRisk.com" }]
 readme = "README.md"

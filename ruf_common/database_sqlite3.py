@@ -12,7 +12,7 @@ from .helper import convert_datetime_format
 
 FILE_CACHE_TABLE = 'filecache'
 
-def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = None, 
+def save_to_db(conn: sqlite3.Connection, table_name: str, content: Any, identifier: Optional[str] = None, 
                additional_fields: Optional[Dict] = None) -> str:
     """
     Save content and additional fields to a SQLite database with type preservation.
@@ -80,7 +80,7 @@ def save_to_db(conn, table_name: str, content: Any, identifier: Optional[str] = 
         raise e
 
 
-def get_from_db(conn, table_name: str, identifier: str) -> Any:
+def get_from_db(conn: sqlite3.Connection, table_name: str, identifier: str) -> Any:
     """
     Retrieve content from the database and restore its original Python data type.
     
@@ -163,7 +163,7 @@ finally:
     conn.close()
 """
 
-def update_record_from_dict(conn, table_name: str, identifier: str, update_dict: Dict) -> bool:
+def update_record_from_dict(conn: sqlite3.Connection, table_name: str, identifier: str, update_dict: Dict) -> bool:
     """
     Update a record in the database with new values from a dictionary.
     Only non-BLOB fields will be updated.
@@ -214,7 +214,7 @@ def update_record_from_dict(conn, table_name: str, identifier: str, update_dict:
         raise e
 
 
-def get_record_metadata(conn, table_name: str, identifier: str) -> Dict:
+def get_record_metadata(conn: sqlite3.Connection, table_name: str, identifier: str) -> Dict:
     """
     Retrieve all non-BLOB fields from a record as a dictionary.
     
@@ -256,7 +256,7 @@ def get_record_metadata(conn, table_name: str, identifier: str) -> Dict:
         raise e
 
 
-def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
+def store_blob_to_db(conn: sqlite3.Connection, identifier: str, blob: Any, attributes: dict) -> bool:
     """
     Store a binary large object (BLOB) in the database.
     If the UUID exists, update the record. Otherwise, insert a new one.
@@ -339,7 +339,7 @@ def store_blob_to_db(conn, identifier: str, blob, attributes: dict) -> bool:
         conn.rollback()
         raise e
 
-def retrieve_blob_from_db(conn, identifier: str) -> Any:
+def retrieve_blob_from_db(conn: sqlite3.Connection, identifier: str) -> Any:
     """
     Retrieve a binary large object (BLOB) from the database.
     
@@ -406,7 +406,7 @@ def retrieve_blob_from_db(conn, identifier: str) -> Any:
         raise e
     
 # -----------------------------------------------------------------------------
-def open_sqlite3(target):
+def open_sqlite3(target: str) -> Optional[sqlite3.Connection]:
     """
     Opens a SQLite3 database file.
     SQLite3 will automatically create the database if it does not exist.
@@ -449,42 +449,41 @@ def open_sqlite3(target):
 #  --- MAIN: Only runs if the module is executed stand-alone. ---
 # =============================================================================
 if __name__ == '__main__':
+    example_usage = """
+    import sqlite3
+
+    conn = sqlite3.connect('data.db')
+
+    try:
+        # First create a record with some metadata
+        content = ["example", "data"]
+        additional_fields = {
+            'category': 'test',
+            'created_by': 'user123',
+            'status': 1,
+            'notes': 'Sample record'
+        }
+        
+        # Save the record
+        record_id = save_to_db(conn, "my_table", content, 
+                            additional_fields=additional_fields)
+        
+        # Retrieve the metadata
+        metadata = get_record_metadata(conn, "my_table", record_id)
+        print("Record metadata:", metadata)
+        # Output might look like:
+        # {
+        #     'uuid': '123e4567-e89b-12d3-a456-426614174000',
+        #     'datatype': 'list',
+        #     'category': 'test',
+        #     'created_by': 'user123',
+        #     'status': 1,
+        #     'notes': 'Sample record'
+        # }
+        
+    finally:
+        conn.close()
+    """
     print("SQLite3 Functions. Not intended to be run as a stand-alone file.")
-
-
-# Example usage:
-"""
-import sqlite3
-
-conn = sqlite3.connect('data.db')
-
-try:
-    # First create a record with some metadata
-    content = ["example", "data"]
-    additional_fields = {
-        'category': 'test',
-        'created_by': 'user123',
-        'status': 1,
-        'notes': 'Sample record'
-    }
-    
-    # Save the record
-    record_id = save_to_db(conn, "my_table", content, 
-                          additional_fields=additional_fields)
-    
-    # Retrieve the metadata
-    metadata = get_record_metadata(conn, "my_table", record_id)
-    print("Record metadata:", metadata)
-    # Output might look like:
-    # {
-    #     'uuid': '123e4567-e89b-12d3-a456-426614174000',
-    #     'datatype': 'list',
-    #     'category': 'test',
-    #     'created_by': 'user123',
-    #     'status': 1,
-    #     'notes': 'Sample record'
-    # }
-    
-finally:
-    conn.close()
-"""
+    print("Example usage:")
+    print(example_usage)

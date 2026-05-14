@@ -3,9 +3,10 @@ from loguru import logger
 from . import helper
 import socket
 import aiohttp
+from typing import Any, Optional
 
 
-def check_internet_connection():
+def check_internet_connection() -> bool:
     try:
         # Try to connect to a reliable host
         socket.create_connection(("8.8.8.8", 53), timeout=3)
@@ -13,21 +14,21 @@ def check_internet_connection():
     except OSError:
         return False
 
-async def async_api_get(url, headers=None):
+async def async_api_get(url: str, headers: Optional[dict] = None) -> Any:
     """Asynchronous version of api_get"""
-    try:
+    try:  # type: ignore
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
                     return await response.json()
                 else:
                     logger.error(f"API request failed with status {response.status}")
-                    return None
+                    return None  # type: ignore
     except Exception as e:
         logger.error(f"Error during API request: {str(e)}")
         return None
     
-async def async_download_file(url, filename):
+async def async_download_file(url: str, filename: str) -> Optional[bytes]:
     """Asynchronous version of download_file"""
     try:
         async with aiohttp.ClientSession() as session:
@@ -43,12 +44,12 @@ async def async_download_file(url, filename):
 
 def api_get(endpoint, http_headers={"Content-type": "application/json"}, timeout_seconds=10):
     """
-        Calls a REST API and returns the response. 
+        Calls a REST API and returns the response.
         endpoint: The full URL to the REST endpoint
-        http_headers: optional headers to include in the request 
+        http_headers: optional headers to include in the request
             If not provided, this funciton requests a JSON response.
-        
     """
+    rest_ret: Optional[requests.Response] = None
     rest_ret = None
     try:
         rest_ret = requests.get(endpoint, headers=http_headers, timeout=timeout_seconds)
@@ -64,10 +65,10 @@ def api_get(endpoint, http_headers={"Content-type": "application/json"}, timeout
     except Exception as err:
         logger.error(f"Unrecognized error {type(err).__name__}: {str(err)}\n--for GET {endpoint}")
 
-    if not rest_ret.status_code == 200:
-        logger.error(f"HTTP Error: {str(rest_ret.status_code)} {rest_ret.text}\n--for GET {endpoint}")
-
-    logger.debug(f"GET {endpoint} returned {rest_ret.status_code}")
+    if rest_ret is not None:
+        if rest_ret.status_code != 200:
+            logger.error(f"HTTP Error: {str(rest_ret.status_code)} {rest_ret.text}\n--for GET {endpoint}")
+        logger.debug(f"GET {endpoint} returned {rest_ret.status_code}")
 
     return rest_ret
 
@@ -75,7 +76,7 @@ def download_file(url, filename):
     """
     Downloads a file from a URL and saves it to the specified filename.
     """
-    ret_value = ""
+    ret_value: str = ""
     try:
         response = requests.get(url)
         ret_value = helper.normalize_content(response.content)
