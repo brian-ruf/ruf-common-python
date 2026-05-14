@@ -23,7 +23,7 @@ pip install ruf-common
 from ruf_common import *
 
 # Or import specific modules
-from ruf_common import data, helper, lfs
+from ruf_common import data, helper, lfs # etc.
 ```
 
 ## Modules
@@ -45,3 +45,18 @@ The following modules are available:
 ## License
 
 MIT
+
+## Use of AI for Creating/Maintaining This Library
+
+**No portion of this library was "vibe coded".**
+
+Early versions of this library were written entirely without the use of AI tools.
+
+Claude/Claude Code and GitHub Co-pilot have been used in a manner similar to pair-programming. This includes:
+- improving alignment with "pythonic" best practices
+- targeted code reviews
+- resolving linter issues
+- aiding in debugging and testing
+- drafting individual functions/methods that I refine and test 
+- drafting portions of documentation
+- drafting unit tests

@@ -1,14 +1,17 @@
 """
 Functions for managing and manipulating XML, JSON and YAML content.
 """
+from __future__ import annotations
 
 import elementpath
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import tostring
 from loguru import logger
 
+from typing import Any, cast
+
 # -------------------------------------------------------------------------
-def detect_data_format(content):
+def detect_data_format(content: str) -> str:
     """Detect whether the content is XML, JSON, or YAML based on its starting characters."""
     content = content.lstrip()  # Remove leading whitespace
 
@@ -25,7 +28,7 @@ def detect_data_format(content):
 
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
-def safe_load(content, data_format=""):
+def safe_load(content: str, data_format: str = "") -> object | None:
     """Check if the provided content string is well-formed based on its format."""
     data_object = None
     if data_format == "":
@@ -43,7 +46,7 @@ def safe_load(content, data_format=""):
 
     return data_object
 # -------------------------------------------------------------------------
-def safe_load_xml(content):
+def safe_load_xml(content: str) -> ET.Element | None:
     """
     Returns an XML tree if the provided XML string is well-formed.
     If not well-formed, returns None.
@@ -64,7 +67,7 @@ def safe_load_xml(content):
 
 
 # -------------------------------------------------------------------------
-def safe_load_json(content):
+def safe_load_json(content: str) -> dict | None:
     """
     Returns a dict if the provided JSON string is well-formed.
     If not well-formed, returns None.
@@ -82,7 +85,7 @@ def safe_load_json(content):
     return data_object
 
 # -------------------------------------------------------------------------
-def safe_load_yaml(content):
+def safe_load_yaml(content: str) -> dict | None:
     """
     Returns a dict if the provided YAML string is well-formed.
     If not well-formed, returns None.
@@ -100,7 +103,7 @@ def safe_load_yaml(content):
     return data_object
 
 # -------------------------------------------------------------------------
-def xpath(tree, nsmap, xExpr, context=None):
+def xpath(tree: Any, nsmap: dict, xExpr: str, context: ET.Element | None = None) -> object | None:
     """
     Performs an xpath query either on the entire XML document 
     or on a context within the document.
@@ -143,7 +146,7 @@ def xpath(tree, nsmap, xExpr, context=None):
     
     return result
 # -------------------------------------------------------------------------
-def xpath_atomic(tree, nsmap, xExpr, context=None):
+def xpath_atomic(tree: Any, nsmap: dict, xExpr: str, context: ET.Element | None = None) -> str:
     """
     Performs an xpath query either on the entire XML document
     or on a context within the document.
@@ -182,7 +185,7 @@ def xpath_atomic(tree, nsmap, xExpr, context=None):
     return str(ret_value)
 
 # -------------------------------------------------------------------------
-def remove_namespace(element):
+def remove_namespace(element: ET.Element) -> None:
     """Remove namespace from an element and all its children"""
     # Remove namespace from this element
     if '}' in element.tag:
@@ -200,7 +203,7 @@ def remove_namespace(element):
 
 
 # -------------------------------------------------------------------------
-def get_markup_content(tree, nsmap, xExpr, context=None):
+def get_markup_content(tree: Any, nsmap: dict, xExpr: str, context: ET.Element | None = None) -> str:
     """
     Get the content of a specific XML element using XPath, preserving HTML formatting.
     
@@ -214,6 +217,7 @@ def get_markup_content(tree, nsmap, xExpr, context=None):
         The content of the element as a string with HTML preserved, or empty string if not found
     """
     ret_value = ""
+    element = None
     
     try:
         # First, try to get the entire element (not just its children)
@@ -244,7 +248,7 @@ def get_markup_content(tree, nsmap, xExpr, context=None):
             # Now we have the element, let's extract its complete content
             if hasattr(element, 'tag'):
                 # This is an Element object
-                ret_value = extract_element_content(element)
+                ret_value = extract_element_content(cast(ET.Element, element))
             else:
                 # This might be a text node or something else
                 ret_value = str(element)
@@ -255,7 +259,7 @@ def get_markup_content(tree, nsmap, xExpr, context=None):
     return ret_value
 
 # -------------------------------------------------------------------------
-def xml_to_string(element):
+def xml_to_string(element: Any) -> str:
     """Convert an XML element or list of elements to a string."""
     import copy
     element_str = ""
@@ -283,7 +287,7 @@ def xml_to_string(element):
 
 
 # -------------------------------------------------------------------------
-def extract_element_content(element):
+def extract_element_content(element: ET.Element | None) -> str:
     """
     Extract the complete inner content of an XML element, preserving all HTML formatting
     but removing namespaces. Handles both simple text content and complex mixed content.
@@ -345,7 +349,7 @@ def extract_element_content(element):
 
 
 # -------------------------------------------------------------------------
-def remove_namespace_from_html(html_str):
+def remove_namespace_from_html(html_str: str) -> str:
     """
     Remove XML namespace declarations from HTML string.
     
@@ -369,7 +373,7 @@ def remove_namespace_from_html(html_str):
     return html_str
 
 # -------------------------------------------------------------------------
-def deserialize_xml(xml_string, nsmap):
+def deserialize_xml(xml_string: str, nsmap: str) -> ET.Element | None:
     """Deserialize an XML string into a Python dictionary."""
     ret_value = None
     try:
@@ -385,8 +389,7 @@ def deserialize_xml(xml_string, nsmap):
     return ret_value
 
 # -------------------------------------------------------------------------
-# -------------------------------------------------------------------------
-def get_attribute_value(element, attribute_name, default=""):
+def get_attribute_value(element: ET.Element, attribute_name: str, default: str = "") -> str:
     """
     Get the value of a specific attribute from an XML element.
     

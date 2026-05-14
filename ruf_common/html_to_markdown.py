@@ -9,7 +9,7 @@ import re
 import html
 
 
-def html_to_markdown(html_content):
+def html_to_markdown(html_content: str) -> str:
     """
     Convert HTML formatting to markdown formatting.
     
@@ -137,7 +137,7 @@ def html_to_markdown(html_content):
     return content
 
 
-def html_to_markdown_file(input_file, output_file):
+def html_to_markdown_file(input_file: str, output_file: str) -> None:
     """
     Convert HTML file to markdown file.
     

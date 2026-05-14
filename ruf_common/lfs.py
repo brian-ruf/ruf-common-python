@@ -12,7 +12,7 @@ from pathlib import Path
 # =============================================================================
 #  --- PyInstaller Interactions  ---
 # =============================================================================
-def resource_path(relative_path):
+def resource_path(relative_path: str) -> str:
     """ Get absolute path to resource, works for dev and for PyInstaller """
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
@@ -22,7 +22,7 @@ def resource_path(relative_path):
 #  --- LFS File Level Interactions ---
 # =============================================================================
 
-def zip_file(file_to_zip, zip_filename, overwrite=False, recurse=False):
+def zip_file(file_to_zip: str, zip_filename: str, overwrite: bool = False, recurse: bool = False) -> bool:
     """
     Creates a zip archive containing files and/or directories.
 
@@ -103,7 +103,7 @@ def zip_file(file_to_zip, zip_filename, overwrite=False, recurse=False):
     return status
 
 # -----------------------------------------------------------------------------
-def putfile(file_name, content):
+def putfile(file_name: str, content: str) -> bool:
     """
     Saves content to a file.
     Returns True if successful. 
@@ -122,7 +122,7 @@ def putfile(file_name, content):
     return status
 
 # -----------------------------------------------------------------------------
-def get_json(file_name) -> dict:
+def get_json(file_name: str) -> dict:
     """
     Opens a JSON file and returns the contents as a dict object.
     If an error occurs, an empty dict is returned.
@@ -138,7 +138,7 @@ def get_json(file_name) -> dict:
 
     return json_data
 # -----------------------------------------------------------------------------
-def save_json(data, file_name):
+def save_json(data: dict, file_name: str) -> bool:
     """
     Saves a dict object as a JSON file.
     Returns True if successful. 
@@ -155,7 +155,7 @@ def save_json(data, file_name):
 
     return status
 # -----------------------------------------------------------------------------
-def chkfile(path) -> bool:
+def chkfile(path: str) -> bool:
     """
     Checks for the existence of a file.
     Returns:
@@ -178,7 +178,7 @@ def chkfile(path) -> bool:
     return status
 
 # -----------------------------------------------------------------------------
-def getfile(file_name, normalize = True, mode="rb") -> str:
+def getfile(file_name: str, normalize: bool = True, mode: str = "rb") -> str:
     """
     Opens a file and returns the contents. Handles errors gracefully.
     If no optional parameters are passed, this will open the file as binary
@@ -220,7 +220,7 @@ def getfile(file_name, normalize = True, mode="rb") -> str:
     return ret_value
 
 # -----------------------------------------------------------------------------
-def getjsonfile(file_name) -> dict:
+def getjsonfile(file_name: str) -> dict:
     """
     Gets a JSON file from the local file system
 
@@ -239,7 +239,7 @@ def getjsonfile(file_name) -> dict:
     return json_results
 
 # -----------------------------------------------------------------------------
-def backup_file(filename):
+def backup_file(filename: str) -> bool:
     """
     Creates a backup of the specified file by duplicating it in its current
        location and appending the date and time to the root file name.
@@ -280,7 +280,7 @@ def get_app_location() -> str:
     return application_path
 
 # -----------------------------------------------------------------------------
-def chkdir(path, make_if_not_present = False) -> bool:
+def chkdir(path: str, make_if_not_present: bool = False) -> bool:
     """
     Checks for the existence of a folder.
 
@@ -313,7 +313,7 @@ def chkdir(path, make_if_not_present = False) -> bool:
 
 
 # -----------------------------------------------------------------------------
-def mkdir(path) -> bool:
+def mkdir(path: str) -> bool:
     """
     Creates any folders needed to ensure the specified path exists.
     Returns:

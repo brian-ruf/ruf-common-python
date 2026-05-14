@@ -19,14 +19,14 @@ from tzlocal import get_localzone
 import json
 import getpass as gt
 from loguru import logger
-from typing import Dict, Any 
+from typing import Dict, Any, Union
 
 # -----------------------------------------------------------------------------
 # =============================================================================
 # DATE/TIME FUNCTIONS
 # =============================================================================
 
-def convert_datetime_format(date_input=datetime.now(), include_time=True, assume_localtime=True, format = "%Y-%m-%dT%H:%M:%SZ") -> str:
+def convert_datetime_format(date_input: Union[str, datetime] = datetime.now(), include_time: bool = True, assume_localtime: bool = True, format: str = "%Y-%m-%dT%H:%M:%SZ") -> str:
     """
     Converts various datetime inputs to a formatted date string.
     Handles both datetime objects and ISO 8601 datetime strings including:
@@ -163,7 +163,7 @@ def convert_datetime_format(date_input=datetime.now(), include_time=True, assume
     
 
 # -----------------------------------------------------------------------------
-def datetime_string(date_time = datetime.now(), format = "%Y-%m-%d--%H-%M-%S")-> str:
+def datetime_string(date_time: datetime = datetime.now(), format: str = "%Y-%m-%d--%H-%M-%S") -> str:
     """
     Converts a date and time to a formatted string.
     Optional Parameters:
@@ -189,7 +189,7 @@ def datetime_string(date_time = datetime.now(), format = "%Y-%m-%d--%H-%M-%S")->
 # =============================================================================
 # LOGIC UTILITIES
 # =============================================================================
-def iif(condition, if_true, if_false):
+def iif(condition: Any, if_true: Any, if_false: Any) -> Any:
     """
     Accepts and evaluates a condition
     Returns the first parameter if the condition is true
@@ -205,7 +205,7 @@ def iif(condition, if_true, if_false):
 # =============================================================================
 # STRING UTILITIES
 # =============================================================================
-def normalize_content(content):
+def normalize_content(content: Union[str, bytes]) -> str:
     """
     Normalize Content
     Converts any bytes content to string.
@@ -226,7 +226,7 @@ def normalize_content(content):
     return content
 
 # -----------------------------------------------------------------------------
-def get_first_non_whitespace_char(data):
+def get_first_non_whitespace_char(data: str) -> str:
     """
     Returns the first character this is not a space or tab.
     Returns an empty string if there is no content or if an error occurs.
@@ -243,7 +243,7 @@ def get_first_non_whitespace_char(data):
     return ret_val
 
 # -----------------------------------------------------------------------------
-def safeJSON(object, keys):
+def safeJSON(object: dict, keys: list) -> str:
     """
     Depreciated in favor of the JSON librariy's `.get()` method.
     Always returns a string from a JSON key or nested keys.
@@ -268,7 +268,7 @@ def safeJSON(object, keys):
     return ret_value
 
 # -----------------------------------------------------------------------------
-def JSON_safe_atomic(object, key):
+def JSON_safe_atomic(object: dict, key: str) -> str:
     """
     Always returns a string from a JSON key.
     If the value at the key is string, int, float, complex or boolean, returns the value as a string.
@@ -296,11 +296,11 @@ def JSON_safe_atomic(object, key):
     return ret_value
 
 # -----------------------------------------------------------------------------
-def indent(level, length=3) -> str:
+def indent(level: int, length: int = 3) -> str:
     return (" " * length * level)
 
 # -------------------------------------------------------------------------
-def has_repeated_ending(full_string, suffix, frequency=2):
+def has_repeated_ending(full_string: str, suffix: str, frequency: int = 2) -> bool:
     """
     Check if a string ends with a specific suffix repeated multiple times.
     
@@ -331,7 +331,7 @@ def has_repeated_ending(full_string, suffix, frequency=2):
 # OS INTERACTION HELPER UTILITIES
 # =============================================================================
 # -----------------------------------------------------------------------------
-def handle_environment_variables(env_name, verbose = False, error_only = True):
+def handle_environment_variables(env_name: str, verbose: bool = False, error_only: bool = True) -> str:
     """
     If the environment variable identified in the argument exits, return the value as a string.
     If the environment variable identified in the argument does not exit, return an empty string.
@@ -353,7 +353,7 @@ def handle_environment_variables(env_name, verbose = False, error_only = True):
     return ret_value
 
 # -----------------------------------------------------------------------------
-def get_user_information():
+def get_user_information() -> str:
     """
     Returns the current user's username.
     Uses the getpass module to retrieve the username.
@@ -508,7 +508,7 @@ def is_valid_html_content(html_content: str) -> bool:
     return len(stack) == 0
 
 # -------------------------------------------------------------------------
-def html_to_json_safe(html_content):
+def html_to_json_safe(html_content: str) -> str:
     """
     Convert HTML content to a JSON-safe string that can still be interpreted by browsers.
     
@@ -531,7 +531,7 @@ def html_to_json_safe(html_content):
     return json_safe[1:-1]
 
 # -------------------------------------------------------------------------
-def html_from_json_safe(json_safe_content):
+def html_from_json_safe(json_safe_content: str) -> str:
     """
     Convert a JSON-safe HTML string back to regular HTML.
     
@@ -552,7 +552,7 @@ def html_from_json_safe(json_safe_content):
 # UI HELPER UTILITIES
 # =============================================================================
 # -----------------------------------------------------------------------------
-def tell_user(message, log_as = ""):
+def tell_user(message: str, log_as: str = "") -> None:
     """
     Outputs a message to the console.
     """
@@ -569,7 +569,7 @@ def tell_user(message, log_as = ""):
         pass # no logging
 
 # -----------------------------------------------------------------------------
-def processing(out_char = "."):
+def processing(out_char: str = ".") -> None:
     """
     Outputs a character to console.
     Intended to be called iterativley from a loop ton indicate progress.
@@ -583,7 +583,7 @@ def processing(out_char = "."):
 # MISCELLANEOUS FUNCTIONS
 # =============================================================================
 # -----------------------------------------------------------------------------
-def compare_semver(version1, version2):
+def compare_semver(version1: str, version2: str) -> int:
     """
     Compare two semantic versions and return:
     -1 if version1 < version2

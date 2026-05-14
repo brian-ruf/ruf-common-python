@@ -216,7 +216,7 @@ def country_name_to_code_api(country_name: str) -> str:
     except Exception:
         return country_name_to_code_fuzzy(country_name)
 
-def demonstrate_conversion():
+def demonstrate_conversion() -> None:
     """Demonstrate different country code conversion methods."""
     
     test_countries = [

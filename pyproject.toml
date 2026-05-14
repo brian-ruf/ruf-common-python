@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruf-common"
-version = "2.0.3"
+version = "2.1.0"
 description = "Functions common to several of Brian's Python projects."
 requires-python = ">=3.9"
 license = "MIT"
@@ -43,6 +43,7 @@ dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "pytest-asyncio>=0.21.0",
+    "ruff>=0.4.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -65,3 +66,10 @@ exclude_lines = [
     "pragma: no cover",
     "if __name__ == .__main__.:",
 ]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E9", "F"]
