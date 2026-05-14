@@ -34,7 +34,9 @@ git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-### 4. Create the GitHub Release
+### 4. Merge with Main
+
+### 5. Create the GitHub Release
 
 1. Go to [Releases → New release](https://github.com/brian-ruf/ruf-common-python/releases/new)
 2. Select tag **`vX.Y.Z`**
